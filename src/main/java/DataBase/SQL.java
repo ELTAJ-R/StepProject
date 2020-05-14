@@ -3,8 +3,7 @@ package DataBase;
 
 import java.sql.*;
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class SQL {
@@ -69,37 +68,37 @@ public class SQL {
         }
     }
 
-    public int getIDByName(String username) throws SQLException {
-        int id = 0;
-        try (Connection cn = DriverManager.getConnection(URL, uname, parol)) {
-            String query = "select id from userdata where name=?;";
-            PreparedStatement statement = cn.prepareStatement(query);
-            statement.setString(1, username);
-            ResultSet result = statement.executeQuery();
-            try {
-                id = result.getInt("id");
-            } catch (Exception e) {
-            }
-
-        }
-        return id;
-    }
-
-    public String getNameByID(int id) throws SQLException {
-        String name = "No such profile";
-        try (Connection cn = DriverManager.getConnection(URL, uname, parol)) {
-            String query = "select name from userdata where id=?;";
-            PreparedStatement statement = cn.prepareStatement(query);
-            statement.setInt(1, id);
-            ResultSet result = statement.executeQuery();
-            try {
-                name = result.getString("name");
-            } catch (Exception e) {
-            }
-
-        }
-        return name;
-    }
+//    public int getIDByName(String username) throws SQLException {
+//        int id = 0;
+//        try (Connection cn = DriverManager.getConnection(URL, uname, parol)) {
+//            String query = "select id from userdata where name=?;";
+//            PreparedStatement statement = cn.prepareStatement(query);
+//            statement.setString(1, username);
+//            ResultSet result = statement.executeQuery();
+//            try {
+//                id = result.getInt("id");
+//            } catch (Exception e) {
+//            }
+//
+//        }
+//        return id;
+//    }
+//
+//    public String getNameByID(int id) throws SQLException {
+//        String name = "No such profile";
+//        try (Connection cn = DriverManager.getConnection(URL, uname, parol)) {
+//            String query = "select name from userdata where id=?;";
+//            PreparedStatement statement = cn.prepareStatement(query);
+//            statement.setInt(1, id);
+//            ResultSet result = statement.executeQuery();
+//            try {
+//                name = result.getString("name");
+//            } catch (Exception e) {
+//            }
+//
+//        }
+//        return name;
+//    }
 
 
     public static LinkedList<String> findAllLikes(String currentUser) throws SQLException {
@@ -146,45 +145,59 @@ public class SQL {
             }
         }
     }
-    public String showMessagesFromMe(String sent,String received) throws SQLException {
-        LinkedList<String> fullChatFromMe=new LinkedList<>();
-        String chat;
+
+    public HashMap<Integer, String> showMessagesFromMe(String sent, String received) throws SQLException {
+        HashMap<Integer, String> fullChatFromMe = new HashMap<>();
         try (Connection cn = DriverManager.getConnection(URL, uname, parol)) {
-            String query = "select message from messages where sender=? and receiver=?;";
+            String query = "select * from messages where sender=? and receiver=?;";
             PreparedStatement statement = cn.prepareStatement(query);
             statement.setString(1, sent);
             statement.setString(2, received);
             ResultSet res = statement.executeQuery();
             while (res.next()) {
-               fullChatFromMe.add(res.getString("message"));
+                int key = res.getInt("id");
+                String message = res.getString("message");
+                fullChatFromMe.put(key, message);
             }
-           chat = fullChatFromMe.stream().collect(Collectors.joining("\n"));
         }
-        return chat;
+
+        return fullChatFromMe;
+
     }
-    public String showMessagesToMe(String receiver,String sender) throws SQLException {
+
+    public HashMap<Integer, String> showMessagesToMe(String receiver, String sender) throws SQLException {
         return showMessagesFromMe(sender, receiver);
 
     }
 
-        public void addMessage(String currentUser,String anotherUser,String message) throws SQLException {
-            String currentTime = String.valueOf(LocalDate.now());
-            try (Connection cn = DriverManager.getConnection(URL, uname, parol)) {
-                String query = "insert into messages (id, sender, receiver, message, date) values (DEFAULT,?,?,?,?)";
-                PreparedStatement statement = cn.prepareStatement(query);
-                statement.setString(1, currentUser);
-                statement.setString(2, anotherUser);
-                statement.setString(3, message);
-                statement.setString(4, currentTime);
-                statement.execute();
-            }}
+    public String getAllMessages(String me, String anotherPerson) throws SQLException {
+        HashMap<Integer, String> from = showMessagesFromMe(me, anotherPerson);
+        HashMap<Integer, String> to = showMessagesToMe(me, anotherPerson);
+        from.putAll(to);
+        return from.entrySet().stream().sorted((o1, o2) -> o1.getKey() - o2.getKey())
+                .map(Map.Entry::getValue).collect(Collectors.joining("\n"));
+
+
+    }
+
+    public void addMessage(String currentUser, String anotherUser, String message) throws SQLException {
+        String currentTime = String.valueOf(LocalDate.now());
+        try (Connection cn = DriverManager.getConnection(URL, uname, parol)) {
+            String query = "insert into messages (id, sender, receiver, message, date) values (DEFAULT,?,?,?,?)";
+            PreparedStatement statement = cn.prepareStatement(query);
+            statement.setString(1, currentUser);
+            statement.setString(2, anotherUser);
+            statement.setString(3, message);
+            statement.setString(4, currentTime);
+            statement.execute();
+        }
+    }
 
 
     public boolean clickedAll(String currentUser) throws SQLException {
         return iterator == findIDRange(currentUser).size() - 1;
 
     }
-
 
 
 }

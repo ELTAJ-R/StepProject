@@ -11,51 +11,53 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.stream.Collectors;
+
 
 public class MessagesServlet extends HttpServlet {
     SQL db = new SQL();
-    static String URL;
+    static private String currentUser;
+    static private String userOnView;
+
+
+    public MessagesServlet() throws SQLException {
+    }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        URL = null;
+        try {
+            currentUser = req.getCookies()[0].getValue();
+            userOnView = req.getPathInfo().substring(1);
+            String allMessages = db.getAllMessages(currentUser, userOnView);
+            HashMap<String, String> hashMap = new HashMap<>();
+            hashMap.put("user", userOnView);
+            hashMap.put("messages", allMessages);
 
-        String res = new BufferedReader(new FileReader(new File("Documents/Code/Chat.html"))).lines()
-                .collect(Collectors.joining("\n"));
-        try (PrintWriter w = resp.getWriter()) {
-            w.write(res);
+            try (PrintWriter w = resp.getWriter()) {
+                FreeMarker marker = new FreeMarker("Documents/Code", resp);
+                marker.config.getTemplate("Messaging.ftl").process(hashMap, w);
+            }
+        } catch (Exception e) {
+            System.out.println(e);
         }
 
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String new_message = req.getParameter("message");
-        String currentUser = req.getCookies()[0].getValue();
-        String userOnView = req.getPathInfo().substring(1);
 
 
-        try {
-            db.addMessage(currentUser, userOnView, new_message);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
         try (PrintWriter w = resp.getWriter()) {
-            String fromMe = db.showMessagesFromMe(currentUser, userOnView);
-            String toMe = db.showMessagesToMe(currentUser, userOnView);
+            String new_message = req.getParameter("message");
+
+            String allMessages = db.getAllMessages(currentUser, userOnView);
             HashMap<String, String> hashMap = new HashMap<>();
-            hashMap.put("userToMessage", userOnView);
-            hashMap.put("fromMe",fromMe);
-            hashMap.put("toMe",toMe);
-            FreeMarker marker = new FreeMarker("Documents/Code");
-            marker.config.getTemplate("Chat.html").process(hashMap, w);
-        } catch (TemplateException e) {
-            e.printStackTrace();
-        } catch (SQLException e) {
+            hashMap.put("user", userOnView);
+            hashMap.put("messages", allMessages);
+            db.addMessage(currentUser, userOnView, new_message);
+            FreeMarker marker = new FreeMarker("Documents/Code", resp);
+            marker.config.getTemplate("Messaging.ftl").process(hashMap, w);
+        } catch (SQLException | TemplateException e) {
             e.printStackTrace();
         }
-
-
     }
 }

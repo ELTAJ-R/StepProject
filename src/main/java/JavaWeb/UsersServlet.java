@@ -9,7 +9,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
-import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 
 
@@ -20,14 +19,11 @@ public class UsersServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         Cookie[] cookies = req.getCookies();
         String currentUser = cookies[0].getValue();
-        resp.setCharacterEncoding(String.valueOf(StandardCharsets.UTF_8));
 
         try (PrintWriter w = resp.getWriter()) {
-            FreeMarker freeMarker = new FreeMarker("Documents/Code");
+            FreeMarker freeMarker = new FreeMarker("Documents/Code",resp);
             freeMarker.config.getTemplate("Users.ftl").process(db.getMap(currentUser), w);
-        } catch (TemplateException e) {
-            e.printStackTrace();
-        } catch (SQLException e) {
+        } catch (TemplateException | SQLException e) {
             e.printStackTrace();
         }
     }
