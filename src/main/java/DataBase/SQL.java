@@ -7,11 +7,12 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class SQL {
+    //Please add UserName, Password and URL in order to access db.
     private static int iterator = 0;
     public static String userOnView;
-    private final static String uname = "postgres";
-    private final static String parol = "9149";
-    private final static String URL = "jdbc:postgresql://localhost:5432/iba-lessons";
+    private final static String uname = "";
+    private final static String parol = "";
+    private final static String URL = "";
 
 
     public static HashMap<String, String> getMap(String currentUser) throws SQLException {
@@ -67,38 +68,6 @@ public class SQL {
             return result;
         }
     }
-
-//    public int getIDByName(String username) throws SQLException {
-//        int id = 0;
-//        try (Connection cn = DriverManager.getConnection(URL, uname, parol)) {
-//            String query = "select id from userdata where name=?;";
-//            PreparedStatement statement = cn.prepareStatement(query);
-//            statement.setString(1, username);
-//            ResultSet result = statement.executeQuery();
-//            try {
-//                id = result.getInt("id");
-//            } catch (Exception e) {
-//            }
-//
-//        }
-//        return id;
-//    }
-//
-//    public String getNameByID(int id) throws SQLException {
-//        String name = "No such profile";
-//        try (Connection cn = DriverManager.getConnection(URL, uname, parol)) {
-//            String query = "select name from userdata where id=?;";
-//            PreparedStatement statement = cn.prepareStatement(query);
-//            statement.setInt(1, id);
-//            ResultSet result = statement.executeQuery();
-//            try {
-//                name = result.getString("name");
-//            } catch (Exception e) {
-//            }
-//
-//        }
-//        return name;
-//    }
 
 
     public static LinkedList<String> findAllLikes(String currentUser) throws SQLException {
@@ -198,6 +167,38 @@ public class SQL {
         return iterator == findIDRange(currentUser).size() - 1;
 
     }
+// The following methods might be used in the future.
+    //    public int getIDByName(String username) throws SQLException {
+//        int id = 0;
+//        try (Connection cn = DriverManager.getConnection(URL, uname, parol)) {
+//            String query = "select id from userdata where name=?;";
+//            PreparedStatement statement = cn.prepareStatement(query);
+//            statement.setString(1, username);
+//            ResultSet result = statement.executeQuery();
+//            try {
+//                id = result.getInt("id");
+//            } catch (Exception e) {
+//            }
+//
+//        }
+//        return id;
+//    }
+//
+//    public String getNameByID(int id) throws SQLException {
+//        String name = "No such profile";
+//        try (Connection cn = DriverManager.getConnection(URL, uname, parol)) {
+//            String query = "select name from userdata where id=?;";
+//            PreparedStatement statement = cn.prepareStatement(query);
+//            statement.setInt(1, id);
+//            ResultSet result = statement.executeQuery();
+//            try {
+//                name = result.getString("name");
+//            } catch (Exception e) {
+//            }
+//
+//        }
+//        return name;
+//    }
 
 
 }

@@ -4,8 +4,11 @@
     <meta charset="UTF-8">
     <title>Messages</title>
 </head>
+<meta http-equiv="refresh" content="30">
 <body>
-Messages <pre> ${messages}</pre>
+    Messages <pre> ${messages}</pre>
+
+
 
 <form method="post">
 <input type="text" name="message">
