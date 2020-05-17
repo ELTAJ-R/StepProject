@@ -5,9 +5,9 @@
     <title>Users</title>
 </head>
 <body>
-<p1>${name} ${surname} </p1>
+<p1>${user.name} ${user.surname} </p1>
 <input type="image"
-       src="${photo}" height="50" width="50"
+       src="${user.picture}" height="50" width="50"
        align="center" name="Profile">
 <form method="post">
     <a href="/users"><input type="submit" content="Yes" style="color: darkgrey;border-radius: 10px" value="Yes"

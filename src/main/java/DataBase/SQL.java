@@ -1,6 +1,9 @@
 package DataBase;
 
 
+import Entities.Triplet;
+import Entities.User;
+
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.*;
@@ -10,37 +13,46 @@ import java.util.stream.IntStream;
 
 public class SQL {
     //Please add UserName, Password and URL in order to access db.
-    private static int iterator = 0;
-    public static String userOnView;
     private final static String uname = "postgres";
     private final static String parol = "9149";
     private final static String URL = "jdbc:postgresql://localhost:5432/iba-lessons";
     private static SQL db = new SQL();
+    private static int lastUserID = 0;
 
 
-    public static HashMap<String, String> getMap(String currentUser) throws SQLException {
-        LinkedList<Integer> range = findIDRange(currentUser);
-        HashMap<String, String> hashMap = new HashMap<>();
-        Connection cn = DriverManager.getConnection(URL, uname, parol);
-        String query = "select * from userdata where id=?";
-        PreparedStatement stmt = cn.prepareStatement(query);
-        stmt.setInt(1, range.get(iterator));
-        ResultSet res = stmt.executeQuery();
-        while (res.next()) {
-            String name = res.getString("name");
-            String surname = res.getString("surname");
-            String photo = res.getString("photo");
-            userOnView = name;
-            hashMap.put("name", name);
-            hashMap.put("surname", surname);
-            hashMap.put("photo", photo);
+    public User getNextUser(String loggedInUser) throws SQLException {
+        User user = new User();
+        try (Connection cn = DriverManager.getConnection(URL, uname, parol)) {
+            String query = "select * from userdata where name!=? and id>?";
+            PreparedStatement stmt = cn.prepareStatement(query);
+            stmt.setString(1, loggedInUser);
+            stmt.setInt(2, lastUserID);
+            ResultSet res = stmt.executeQuery();
+            while (res.next()) {
+                lastUserID = res.getInt("id");
+                String name = res.getString("name");
+                String surname = res.getString("surname");
+                String photo = res.getString("photo");
+                user = new User(lastUserID, name, surname, photo);
+                break;
+            }
+            if (lastUserID == getMaxID()) lastUserID = 0;
+            return user;
         }
-
-        if (iterator < range.size() - 1) iterator++;
-        else iterator = 0;
-        return hashMap;
     }
 
+    public static int getMaxID() throws SQLException {
+        int maxID = 0;
+        try (Connection cn = DriverManager.getConnection(URL, uname, parol);) {
+            String query = "select max(id) from userdata";
+            PreparedStatement stmt = cn.prepareStatement(query);
+            ResultSet res = stmt.executeQuery();
+            while (res.next()) {
+                maxID = res.getInt("max");
+            }
+            return maxID;
+        }
+    }
 
     public boolean login(String user, String password) throws SQLException {
         boolean isLoggedIn = false;
@@ -56,20 +68,6 @@ public class SQL {
             }
             return isLoggedIn;
 
-        }
-    }
-
-    public static LinkedList<Integer> findIDRange(String currentUser) throws SQLException {
-        LinkedList<Integer> result = new LinkedList<>();
-        try (Connection cn = DriverManager.getConnection(URL, uname, parol);) {
-            String query = "select id  from userdata where name!=?";
-            PreparedStatement stmt = cn.prepareStatement(query);
-            stmt.setString(1, currentUser);
-            ResultSet res = stmt.executeQuery();
-            while (res.next()) {
-                result.add(res.getInt("id"));
-            }
-            return result;
         }
     }
 
@@ -186,41 +184,8 @@ public class SQL {
     }
 
 
-    public boolean clickedAll(String currentUser) throws SQLException {
-        return iterator == findIDRange(currentUser).size() - 1;
-    }
-
-    // The following methods might be used in the future.
-    //    public int getIDByName(String username) throws SQLException {
-//        int id = 0;
-//        try (Connection cn = DriverManager.getConnection(URL, uname, parol)) {
-//            String query = "select id from userdata where name=?;";
-//            PreparedStatement statement = cn.prepareStatement(query);
-//            statement.setString(1, username);
-//            ResultSet result = statement.executeQuery();
-//            try {
-//                id = result.getInt("id");
-//            } catch (Exception e) {
-//            }
-//
-//        }
-//        return id;
-//    }
-//
-//    public String getNameByID(int id) throws SQLException {
-//        String name = "No such profile";
-//        try (Connection cn = DriverManager.getConnection(URL, uname, parol)) {
-//            String query = "select name from userdata where id=?;";
-//            PreparedStatement statement = cn.prepareStatement(query);
-//            statement.setInt(1, id);
-//            ResultSet result = statement.executeQuery();
-//            try {
-//                name = result.getString("name");
-//            } catch (Exception e) {
-//            }
-//
-//        }
-//        return name;
+//    public boolean clickedAll(String currentUser) throws SQLException {
+//        return iterator == findIDRange(currentUser).size() - 1;
 //    }
 
 }

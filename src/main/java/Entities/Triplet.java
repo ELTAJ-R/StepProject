@@ -1,9 +1,9 @@
-package DataBase;
+package Entities;
 
 public class Triplet {
-    int id;
-    String sender;
-    String message;
+    public int id;
+    public String sender;
+    public String message;
 
     public Triplet() {
     }
