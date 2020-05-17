@@ -6,10 +6,9 @@
 </head>
 <body>
 
-    <#list allLikes as like>
-    <a href="/messages/${like}"> ${like}<br></a>
-    </#list>
-</form>
+<#list allLikes as like>
+<a href="/messages/${like}"> ${like}<br></a>
+</#list>
 
 </body>
 </html>

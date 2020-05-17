@@ -5,14 +5,17 @@ import java.sql.*;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
 
 public class SQL {
     //Please add UserName, Password and URL in order to access db.
     private static int iterator = 0;
     public static String userOnView;
-    private final static String uname = "";
-    private final static String parol = "";
-    private final static String URL = "";
+    private final static String uname = "postgres";
+    private final static String parol = "9149";
+    private final static String URL = "jdbc:postgresql://localhost:5432/iba-lessons";
+    private static SQL db = new SQL();
 
 
     public static HashMap<String, String> getMap(String currentUser) throws SQLException {
@@ -32,6 +35,7 @@ public class SQL {
             hashMap.put("surname", surname);
             hashMap.put("photo", photo);
         }
+
         if (iterator < range.size() - 1) iterator++;
         else iterator = 0;
         return hashMap;
@@ -70,7 +74,7 @@ public class SQL {
     }
 
 
-    public static LinkedList<String> findAllLikes(String currentUser) throws SQLException {
+    public static LinkedList<String> findAllLikes(String currentUser) {
         LinkedList<String> allLikedProfiles = new LinkedList<>();
         try (Connection cn = DriverManager.getConnection(URL, uname, parol)) {
             String query = "select liked from likes where current=?";
@@ -115,8 +119,10 @@ public class SQL {
         }
     }
 
-    public HashMap<Integer, String> showMessagesFromMe(String sent, String received) throws SQLException {
-        HashMap<Integer, String> fullChatFromMe = new HashMap<>();
+
+    //shows messages sent by logged in user to another person
+    public LinkedList<Triplet> showMessagesFromMe(String sent, String received) throws SQLException {
+        LinkedList<Triplet> fromMe = new LinkedList<>();
         try (Connection cn = DriverManager.getConnection(URL, uname, parol)) {
             String query = "select * from messages where sender=? and receiver=?;";
             PreparedStatement statement = cn.prepareStatement(query);
@@ -125,28 +131,45 @@ public class SQL {
             ResultSet res = statement.executeQuery();
             while (res.next()) {
                 int key = res.getInt("id");
+                String sender = res.getString("sender");
                 String message = res.getString("message");
-                fullChatFromMe.put(key, message);
+                fromMe.add(new Triplet(key, sender, message));
             }
         }
 
-        return fullChatFromMe;
+        return fromMe;
 
     }
 
-    public HashMap<Integer, String> showMessagesToMe(String receiver, String sender) throws SQLException {
+    //shows messages sent to logged in user from another person
+    public LinkedList<Triplet> showMessagesToMe(String receiver, String sender) throws SQLException {
         return showMessagesFromMe(sender, receiver);
 
     }
 
-    public String getAllMessages(String me, String anotherPerson) throws SQLException {
-        HashMap<Integer, String> from = showMessagesFromMe(me, anotherPerson);
-        HashMap<Integer, String> to = showMessagesToMe(me, anotherPerson);
-        from.putAll(to);
-        return from.entrySet().stream().sorted((o1, o2) -> o1.getKey() - o2.getKey())
-                .map(Map.Entry::getValue).collect(Collectors.joining("\n"));
+    //puts all messages in order based on the time sent
+    public List<Triplet> getAllMessages(String me, String anotherPerson) throws SQLException {
+        LinkedList<Triplet> from = showMessagesFromMe(me, anotherPerson);
+        LinkedList<Triplet> to = showMessagesToMe(me, anotherPerson);
+        from.addAll(to);
+        return from.stream().sorted((t1, t2) -> (t1.id) - (t2.id))
+                .collect(Collectors.toList());
+    }
 
 
+    public static String listToString(List<Triplet> messages) {
+        return messages.stream().map(Triplet::toString).collect(Collectors.joining("\n"));
+    }
+
+    //limits the number of shown messages to the specified number
+    public String messageLimiter(int limit, String me, String anotherPerson) throws SQLException {
+        List<Triplet> allMessages = db.getAllMessages(me, anotherPerson);
+        boolean shouldDelete = allMessages.size() > limit;
+        if (shouldDelete) {
+            List<Triplet> list = IntStream.range(allMessages.size() - limit, allMessages.size())
+                    .mapToObj(allMessages::get).collect(Collectors.toList());
+            return listToString(list);
+        } else return listToString(allMessages);
     }
 
     public void addMessage(String currentUser, String anotherUser, String message) throws SQLException {
@@ -165,9 +188,9 @@ public class SQL {
 
     public boolean clickedAll(String currentUser) throws SQLException {
         return iterator == findIDRange(currentUser).size() - 1;
-
     }
-// The following methods might be used in the future.
+
+    // The following methods might be used in the future.
     //    public int getIDByName(String username) throws SQLException {
 //        int id = 0;
 //        try (Connection cn = DriverManager.getConnection(URL, uname, parol)) {
@@ -199,7 +222,6 @@ public class SQL {
 //        }
 //        return name;
 //    }
-
 
 }
 
