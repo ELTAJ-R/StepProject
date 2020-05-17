@@ -1,6 +1,7 @@
 package DataBase;
 
 
+import Entities.Pair;
 import Entities.Triplet;
 import Entities.User;
 
@@ -20,8 +21,9 @@ public class SQL {
     private static int lastUserID = 0;
 
 
-    public User getNextUser(String loggedInUser) throws SQLException {
+    public Pair<Boolean, User> getNextUser(String loggedInUser) throws SQLException {
         User user = new User();
+        boolean allClicked = false;
         try (Connection cn = DriverManager.getConnection(URL, uname, parol)) {
             String query = "select * from userdata where name!=? and id>?";
             PreparedStatement stmt = cn.prepareStatement(query);
@@ -36,8 +38,12 @@ public class SQL {
                 user = new User(lastUserID, name, surname, photo);
                 break;
             }
-            if (lastUserID == getMaxID()) lastUserID = 0;
-            return user;
+           
+            if (lastUserID == getMaxID()){ lastUserID = 0;
+                allClicked = true;
+            }
+            Pair<Boolean, User> pair = new Pair<>(allClicked, user);
+            return pair;
         }
     }
 
@@ -182,11 +188,6 @@ public class SQL {
             statement.execute();
         }
     }
-
-
-//    public boolean clickedAll(String currentUser) throws SQLException {
-//        return iterator == findIDRange(currentUser).size() - 1;
-//    }
 
 }
 

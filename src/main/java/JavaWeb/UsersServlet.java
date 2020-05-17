@@ -2,6 +2,7 @@ package JavaWeb;
 
 import DataBase.FreeMarker;
 import DataBase.SQL;
+import Entities.Pair;
 import Entities.User;
 import freemarker.template.TemplateException;
 
@@ -16,16 +17,16 @@ import java.util.HashMap;
 
 public class UsersServlet extends HttpServlet {
     SQL db = new SQL();
-    public static User user;
+    public static Pair<Boolean, User> pair;
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         try {
             Cookie[] cookies = req.getCookies();
             String currentUser = cookies[0].getValue();
-            user = db.getNextUser(currentUser);
+            pair = db.getNextUser(currentUser);
             HashMap<String, User> map = new HashMap<>();
-            map.put("user", user);
+            map.put("user", pair.b);
             try (PrintWriter w = resp.getWriter()) {
                 FreeMarker freeMarker = new FreeMarker("Documents/Code", resp);
                 freeMarker.config.getTemplate("Users.ftl").process(map, w);
@@ -43,13 +44,13 @@ public class UsersServlet extends HttpServlet {
                 String currentUser = cookies[0].getValue();
                 boolean didYouLike = req.getParameter("first") != null;
                 if (didYouLike) {
-                    String like = user.name;
+                    String like = pair.b.name;
                     db.addLike(currentUser, like);
                 }
-//                if (db.clickedAll(currentUser)) {
-//                    resp.sendRedirect("/like");
-//                } else
-                resp.sendRedirect("/users");
+                if (pair.a) {
+                    resp.sendRedirect("/like");
+                } else
+                    resp.sendRedirect("/users");
             }
 
         } catch (NullPointerException e) {
