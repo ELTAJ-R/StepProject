@@ -28,7 +28,7 @@ public class UsersServlet extends HttpServlet {
             HashMap<String, User> map = new HashMap<>();
             map.put("user", pair.b);
             try (PrintWriter w = resp.getWriter()) {
-                FreeMarker freeMarker = new FreeMarker("Documents/Code", resp);
+                FreeMarker freeMarker = new FreeMarker(db.htmlLocation, resp);
                 freeMarker.config.getTemplate("Users.ftl").process(map, w);
             }
         } catch (TemplateException | SQLException e) {

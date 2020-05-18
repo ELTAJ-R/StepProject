@@ -17,8 +17,9 @@ public class LoginServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        String location=String.format("%s/%s",db.htmlLocation,"Login.html");
 
-        String html = new BufferedReader(new FileReader(new File("Documents/Code/Login.html"))).lines()
+        String html = new BufferedReader(new FileReader(new File(location))).lines()
                 .collect(Collectors.joining("\n"));
         try (PrintWriter w = resp.getWriter()) {
             w.write(html);

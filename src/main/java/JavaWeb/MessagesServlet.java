@@ -31,7 +31,7 @@ public class MessagesServlet extends HttpServlet {
             hashMap.put("messages", allMessages);
 
             try (PrintWriter w = resp.getWriter()) {
-                FreeMarker marker = new FreeMarker("Documents/Code", resp);
+                FreeMarker marker = new FreeMarker(db.htmlLocation, resp);
                 marker.config.getTemplate("Messaging.ftl").process(hashMap, w);
             }
         } catch (Exception e) {
@@ -51,7 +51,7 @@ public class MessagesServlet extends HttpServlet {
             hashMap.put("user", userOnView);
             hashMap.put("messages", allMessages);
             db.addMessage(currentUser, userOnView, new_message);
-            FreeMarker marker = new FreeMarker("Documents/Code", resp);
+            FreeMarker marker = new FreeMarker(db.htmlLocation, resp);
             marker.config.getTemplate("Messaging.ftl").process(hashMap, w);
         } catch (SQLException | TemplateException e) {
             e.printStackTrace();

@@ -23,7 +23,7 @@ public class LikedProfilesServlet extends HttpServlet {
             map.put("allLikes", allLikes);
 
             try (PrintWriter w = resp.getWriter()) {
-                FreeMarker marker = new FreeMarker("Documents/Code",resp);
+                FreeMarker marker = new FreeMarker(db.htmlLocation,resp);
                 marker.config.getTemplate("Like.ftl").process(map, w);
             }
         } catch (Exception e) {

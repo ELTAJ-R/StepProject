@@ -19,6 +19,7 @@ public class SQL {
     private final static String URL = "jdbc:postgresql://localhost:5432/iba-lessons";
     private static SQL db = new SQL();
     private static int lastUserID = 0;
+    public final String htmlLocation="src/main/java/Documents/HTML";
 
 
     public Pair<Boolean, User> getNextUser(String loggedInUser) throws SQLException {

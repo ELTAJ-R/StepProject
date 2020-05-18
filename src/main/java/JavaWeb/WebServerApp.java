@@ -19,6 +19,7 @@ public class WebServerApp {
         handler.addServlet(new ServletHolder(new LikedProfilesServlet()), "/like/*");
         handler.addServlet(new ServletHolder(new MessagesServlet()), "/messages/*");
         handler.addServlet(CookiesGet.class, "/cookies/*");
+        handler.addServlet(new ServletHolder(new ReferenceServlet("CSS")), "/css/*");
 
         handler.addFilter(CookieFilter.class, "/users/*", EnumSet.of(DispatcherType.REQUEST));
 //        handler.addFilter(ExtraSecurityFilter.class, "/users/*", EnumSet.of(DispatcherType.REQUEST));
