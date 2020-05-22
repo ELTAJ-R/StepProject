@@ -15,7 +15,7 @@ import java.util.List;
 
 public class MessagesServlet extends HttpServlet {
     SQL db = new SQL();
-    static int numberOfMessages = 10;
+    static int numberOfMessages = 8;
 
 
     @Override

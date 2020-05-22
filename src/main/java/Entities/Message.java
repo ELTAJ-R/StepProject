@@ -6,21 +6,17 @@ public class Message {
     public String sender;
     public String message;
     public String isSent;
+    public String date;
 
     public Message() {
     }
 
-    public Message(int id, String sender, String message) {
-        this.id = id;
-        this.sender = sender;
-        this.message = message;
-    }
-
-    public Message(int id, String sender, String message, String isSent) {
+    public Message(int id, String sender, String message, String isSent, String date) {
         this.id = id;
         this.sender = sender;
         this.message = message;
         this.isSent = isSent;
+        this.date = date;
     }
 
     public int getId() {
@@ -53,6 +49,14 @@ public class Message {
 
     public void setIsSent(String isSent) {
         this.isSent = isSent;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
     }
 
     //this method determines how messages are going to be shown on web-page

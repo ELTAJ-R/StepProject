@@ -7,6 +7,8 @@ import Entities.User;
 
 import java.sql.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -189,7 +191,7 @@ public class SQL {
                 Message message = new Message(res.getInt("id"),
                         res.getString("sender"),
                         res.getString("message"),
-                        isSent);
+                        isSent,res.getString("date"));
                 fromMe.add(message);
             }
         }
@@ -232,7 +234,9 @@ public class SQL {
     }
 
     public void addMessage(String currentUser, String anotherUser, String message) throws SQLException {
-        String currentTime = String.valueOf(LocalDate.now());
+        DateTimeFormatter formatter=DateTimeFormatter.ofPattern("HH:mm dd.MM.YYYY");
+        LocalDateTime now=LocalDateTime.now();
+        String currentTime = formatter.format(now);
         try (Connection cn = DriverManager.getConnection(URL, uname, parol)) {
             String query = "insert into messages (id, sender, receiver, message, date) values (DEFAULT,?,?,?,?)";
             PreparedStatement statement = cn.prepareStatement(query);

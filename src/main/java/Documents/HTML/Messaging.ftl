@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -18,6 +18,11 @@
     <link rel="stylesheet" href="/css/style.css">
     <meta http-equiv="refresh" content="20"/>
 </head>
+<a href="/logout"><img src="https://i.ya-webdesign.com/images/log-out-icon-png-4.png"
+                       style="width:42px;height:42px;border:0;position:absolute; top:0; right:10px;background-color: white"></a>
+<a href="/users/*"><img
+            src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/13/Facebook_like_thumb.png/700px-Facebook_like_thumb.png"
+            style="width:42px;height:42px;border:0;position:absolute; top:0; right:60px;"></a>
 <body>
 
 <div class="container">
@@ -56,6 +61,7 @@
                                 <p class="pt-1 pb-1 pl-2 pr-2 m-0 rounded">
                                     ${message.message}
                                 </p>
+                                <span class="send-msg-time">${message.date}</span>
                                 </li></#if>
                             <#if message.isSent='false'>
                                 <li class="receive-msg float-left mb-2">
@@ -66,6 +72,7 @@
                                     <p class="bg-white m-0 pt-1 pb-1 pl-2 pr-2 rounded">
                                         ${message.message}
                                     </p>
+                                    <span class="receive-msg-time">${user.name},${message.date}</span>
                                 </div>
                                 </li></#if>
                         </#list>
@@ -80,16 +87,17 @@
                             <div class="col-md-7 pl-0">
                                 <input type="text" name="message" class="border-0" placeholder="Send message"/>
                             </div>
-                            <div class="container">
-                                <button class="btn btn4" type="submit">Send</button>
-                            </div>
-                        </form>
                     </div>
                 </div>
             </div>
+            <div class="container">
+                <button class="btn btn4" type="submit" style="position:absolute; bottom:20px; right:5px;">Send</button>
+                </div></form>
         </div>
     </div>
 </div>
+
+
 
 </body>
 </html>
