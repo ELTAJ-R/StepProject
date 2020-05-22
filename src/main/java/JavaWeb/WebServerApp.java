@@ -18,14 +18,15 @@ public class WebServerApp {
         handler.addServlet(new ServletHolder(new LogOutServlet()), "/logout/*");
         handler.addServlet(new ServletHolder(new LikedProfilesServlet()), "/like/*");
         handler.addServlet(new ServletHolder(new MessagesServlet()), "/messages/*");
+        handler.addServlet(RegistrationServlet.class, "/register/*");
         handler.addServlet(CookiesGet.class, "/cookies/*");
         handler.addServlet(new ServletHolder(new ReferenceServlet("CSS")), "/css/*");
 
         handler.addFilter(CookieFilter.class, "/users/*", EnumSet.of(DispatcherType.REQUEST));
-//        handler.addFilter(ExtraSecurityFilter.class, "/users/*", EnumSet.of(DispatcherType.REQUEST));
         handler.addFilter(CookieFilter.class, "/logout/*", EnumSet.of(DispatcherType.REQUEST));
         handler.addFilter(CookieFilter.class, "/like/*", EnumSet.of(DispatcherType.REQUEST));
         handler.addFilter(LoginFilter.class, "/login/*", EnumSet.of(DispatcherType.REQUEST));
+        handler.addFilter(LoginFilter.class, "/register/*", EnumSet.of(DispatcherType.REQUEST));
         handler.addFilter(CookieFilter.class, "/messages/*", EnumSet.of(DispatcherType.REQUEST));
 
         server.setHandler(handler);

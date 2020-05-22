@@ -1,23 +1,61 @@
-<!DOCTYPE html>
-<html lang="en" xmlns:height="http://www.w3.org/1999/xhtml" xmlns:width="http://www.w3.org/1999/xhtml">
+<!doctype html>
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Users</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="">
+
+    <title>Likes</title>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css"
+          integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
+    <!-- Bootstrap core CSS -->
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link rel="stylesheet" href="/css/style.css">
 </head>
-<body>
-<p1>${user.name} ${user.surname} </p1>
-<input type="image"
-       src="${user.picture}" height="50" width="50"
-       align="center" name="Profile">
-<form method="post">
-    <a href="/users"><input type="submit" content="Yes" style="color: darkgrey;border-radius: 10px" value="Yes"
-                            name="first"></input></a>
-    <a href="/users"><input type="submit" style="color: darkgrey;border-radius: 10px" value="No" name="second"></input></a>
 
-</form>
 
+<body style="background-color: #f5f5f5;">
+
+<div class="col-4 offset-4">
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-12 col-lg-12 col-md-12 text-center">
+
+
+                    <img src="${user.picture}" alt="" class="mx-auto rounded-circle img-fluid">
+
+                    <h3 class="mb-0 text-truncated">${user.name} ${user.surname}</h3>
+                    <br>
+                </div>
+
+                <div class="col-12 col-lg-6">
+                    <form method="post">
+                        <button type="submit" class="btn btn-outline-danger btn-block" name="second"><span
+                                    class="fa fa-times"></span>Dislike
+                        </button>
+
+                    </form>
+                </div>
+                <div class="col-12 col-lg-6">
+                    <form method="post">
+                        <button class="btn btn-outline-success btn-block" name="first"><span
+                                    class="fa fa-heart"></span>Like
+                        </button>
+                    </form>
+                </div>
+                <!--/col-->
+            </div>
+            <!--/row-->
+        </div>
+        <!--/card-block-->
+    </div>
+</div>
 
 
 </body>
-<a href="/logout">Logout</a>
 </html>

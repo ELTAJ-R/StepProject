@@ -1,14 +1,14 @@
 package Entities;
 
-public class Triplet {
+public class Message {
     public int id;
     public String sender;
     public String message;
 
-    public Triplet() {
+    public Message() {
     }
 
-    public Triplet(int id, String sender, String message) {
+    public Message(int id, String sender, String message) {
         this.id = id;
         this.sender = sender;
         this.message = message;

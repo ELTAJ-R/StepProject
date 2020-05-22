@@ -17,7 +17,7 @@ public class LoginServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        String location=String.format("%s/%s",db.htmlLocation,"Login.html");
+        String location = String.format("%s/%s", db.htmlLocation, "Login.html");
 
         String html = new BufferedReader(new FileReader(new File(location))).lines()
                 .collect(Collectors.joining("\n"));
@@ -41,6 +41,7 @@ public class LoginServlet extends HttpServlet {
             Cookie cookie = new Cookie("user", user);
             cookie.setPath("/");
             resp.addCookie(cookie);
+            db.updateLoginDate(user);
             resp.sendRedirect("/users/*");
         } else resp.sendRedirect("/login");
 
