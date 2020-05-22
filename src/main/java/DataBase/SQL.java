@@ -6,9 +6,6 @@ import Entities.Message;
 import Entities.User;
 
 import java.sql.*;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -22,8 +19,9 @@ public class SQL {
     private static SQL db = new SQL();
     private static int lastUserID = 0;
     public final String htmlLocation = "src/main/java/Documents/HTML";
+    public static Methods methods = new Methods();
 
-//This function gets new user each time from db. when /users/* get request is made
+    //This function gets new user each time from db. when /users/* get request is made
     public Pair<Boolean, User> getNextUser(String loggedInUser) throws SQLException {
         User user = new User();
         boolean allClicked = false;
@@ -87,11 +85,10 @@ public class SQL {
 
     //this method puts the latest time user logged in into db.
     public void updateLoginDate(String curr) {
-        String currentTime = String.valueOf(LocalDate.now());
         try (Connection cn = DriverManager.getConnection(URL, uname, parol)) {
             String query = "update userdata set lastlogin=? where username=?";
             PreparedStatement statement = cn.prepareStatement(query);
-            statement.setString(1, currentTime);
+            statement.setString(1, methods.now());
             statement.setString(2, curr);
             statement.execute();
         } catch (Exception e) {
@@ -179,7 +176,7 @@ public class SQL {
 
 
     //shows messages sent by logged in user to another person
-    public LinkedList<Message> showMessagesFromMe(String sent, String received,String isSent) throws SQLException {
+    public LinkedList<Message> showMessagesFromMe(String sent, String received, String isSent) throws SQLException {
         LinkedList<Message> fromMe = new LinkedList<>();
         try (Connection cn = DriverManager.getConnection(URL, uname, parol)) {
             String query = "select * from messages where sender=? and receiver=?;";
@@ -191,7 +188,7 @@ public class SQL {
                 Message message = new Message(res.getInt("id"),
                         res.getString("sender"),
                         res.getString("message"),
-                        isSent,res.getString("date"));
+                        isSent, res.getString("date"));
                 fromMe.add(message);
             }
         }
@@ -201,17 +198,16 @@ public class SQL {
     }
 
     //shows messages sent to logged in user from another person
-    public LinkedList<Message> showMessagesToMe(String receiver, String sender,String isSent) throws SQLException {
-        return showMessagesFromMe(sender, receiver,isSent);
-
+    public LinkedList<Message> showMessagesToMe(String receiver, String sender, String isSent) throws SQLException {
+        return showMessagesFromMe(sender, receiver, isSent);
 
 
     }
 
     //puts all messages in order based on the time sent
     public List<Message> getAllMessages(String me, String anotherPerson) throws SQLException {
-        LinkedList<Message> from = showMessagesFromMe(me, anotherPerson,"true");
-        LinkedList<Message> to = showMessagesToMe(me, anotherPerson,"false");
+        LinkedList<Message> from = showMessagesFromMe(me, anotherPerson, "true");
+        LinkedList<Message> to = showMessagesToMe(me, anotherPerson, "false");
         from.addAll(to);
         return from.stream().sorted((t1, t2) -> (t1.id) - (t2.id))
                 .collect(Collectors.toList());
@@ -233,17 +229,16 @@ public class SQL {
         } else return allMessages;
     }
 
+
+
     public void addMessage(String currentUser, String anotherUser, String message) throws SQLException {
-        DateTimeFormatter formatter=DateTimeFormatter.ofPattern("HH:mm dd.MM.YYYY");
-        LocalDateTime now=LocalDateTime.now();
-        String currentTime = formatter.format(now);
         try (Connection cn = DriverManager.getConnection(URL, uname, parol)) {
             String query = "insert into messages (id, sender, receiver, message, date) values (DEFAULT,?,?,?,?)";
             PreparedStatement statement = cn.prepareStatement(query);
             statement.setString(1, currentUser);
             statement.setString(2, anotherUser);
             statement.setString(3, message);
-            statement.setString(4, currentTime);
+            statement.setString(4, methods.now());
             statement.execute();
         }
     }

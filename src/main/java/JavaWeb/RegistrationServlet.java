@@ -1,5 +1,6 @@
 package JavaWeb;
 
+import DataBase.Methods;
 import DataBase.SQL;
 import Entities.User;
 
@@ -33,12 +34,11 @@ public class RegistrationServlet extends HttpServlet {
                 req.getParameter("photo"),
                 req.getParameter("password"));
 
-
-        boolean registered = db.register(user);
-        if (registered) resp.sendRedirect("/login/*");
+        Methods methods = new Methods();
+        //no way to register without filling the whole form
+        boolean canProceed = methods.allIsFilled(req, 5) && db.register(user);
+        if (canProceed) resp.sendRedirect("/login/*");
         else resp.sendRedirect("/register/*");
-
-
     }
 }
 

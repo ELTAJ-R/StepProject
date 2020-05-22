@@ -1,6 +1,7 @@
 package JavaWeb;
 
 import DataBase.FreeMarker;
+import DataBase.Methods;
 import DataBase.SQL;
 import Entities.Message;
 
@@ -41,15 +42,16 @@ public class MessagesServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        Methods method = new Methods();
         String currentUser = req.getCookies()[0].getValue();
         String userOnView = req.getPathInfo().substring(1);
         String new_message = req.getParameter("message");
+        //no way to send an empty message
+        boolean shouldAdd = method.containsRealValue(new_message);
         String redirection = String.format("%s/%s", "/messages", userOnView);
-        try {
-            db.addMessage(currentUser, userOnView, new_message);
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }
+        if(shouldAdd){
+        try { db.addMessage(currentUser, userOnView, new_message);}
+        catch (SQLException ex) {}}
         resp.sendRedirect(redirection);
 
 
