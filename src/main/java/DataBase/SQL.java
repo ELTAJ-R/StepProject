@@ -13,9 +13,11 @@ import java.util.stream.IntStream;
 
 public class SQL {
     //Please add UserName, Password and URL in order to access db.
-    private final static String uname = "postgres";
-    private final static String parol = "9149";
-    private final static String URL = "jdbc:postgresql://localhost:5432/iba-lessons";
+    public static  HerokuEnv credentials=new HerokuEnv();
+    private final static String uname = credentials.jdbc_username();
+    private final static String parol = credentials.jdbc_password();
+    private final static String URL = credentials.jdbc_url();
+
     private static SQL db = new SQL();
     private static int lastUserID = 0;
     public final String htmlLocation = "src/main/java/Documents/HTML";

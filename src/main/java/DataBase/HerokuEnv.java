@@ -1,4 +1,4 @@
-package org.alexr.step;
+package DataBase;
 
 public class HerokuEnv {
 
