@@ -21,7 +21,7 @@ public class SQL {
     private static int lastUserID = 0;
     public final String htmlLocation = "src/main/java/Documents/HTML";
 
-
+//This function gets new user each time from db. when /users/* get request is made
     public Pair<Boolean, User> getNextUser(String loggedInUser) throws SQLException {
         User user = new User();
         boolean allClicked = false;
@@ -177,7 +177,7 @@ public class SQL {
 
 
     //shows messages sent by logged in user to another person
-    public LinkedList<Message> showMessagesFromMe(String sent, String received) throws SQLException {
+    public LinkedList<Message> showMessagesFromMe(String sent, String received,String isSent) throws SQLException {
         LinkedList<Message> fromMe = new LinkedList<>();
         try (Connection cn = DriverManager.getConnection(URL, uname, parol)) {
             String query = "select * from messages where sender=? and receiver=?;";
@@ -186,10 +186,11 @@ public class SQL {
             statement.setString(2, received);
             ResultSet res = statement.executeQuery();
             while (res.next()) {
-                int key = res.getInt("id");
-                String sender = res.getString("sender");
-                String message = res.getString("message");
-                fromMe.add(new Message(key, sender, message));
+                Message message = new Message(res.getInt("id"),
+                        res.getString("sender"),
+                        res.getString("message"),
+                        isSent);
+                fromMe.add(message);
             }
         }
 
@@ -198,15 +199,17 @@ public class SQL {
     }
 
     //shows messages sent to logged in user from another person
-    public LinkedList<Message> showMessagesToMe(String receiver, String sender) throws SQLException {
-        return showMessagesFromMe(sender, receiver);
+    public LinkedList<Message> showMessagesToMe(String receiver, String sender,String isSent) throws SQLException {
+        return showMessagesFromMe(sender, receiver,isSent);
+
+
 
     }
 
     //puts all messages in order based on the time sent
     public List<Message> getAllMessages(String me, String anotherPerson) throws SQLException {
-        LinkedList<Message> from = showMessagesFromMe(me, anotherPerson);
-        LinkedList<Message> to = showMessagesToMe(me, anotherPerson);
+        LinkedList<Message> from = showMessagesFromMe(me, anotherPerson,"true");
+        LinkedList<Message> to = showMessagesToMe(me, anotherPerson,"false");
         from.addAll(to);
         return from.stream().sorted((t1, t2) -> (t1.id) - (t2.id))
                 .collect(Collectors.toList());
@@ -224,7 +227,6 @@ public class SQL {
         if (shouldDelete) {
             List<Message> list = IntStream.range(allMessages.size() - limit, allMessages.size())
                     .mapToObj(allMessages::get).collect(Collectors.toList());
-//            return listToString(list);
             return list;
         } else return allMessages;
     }

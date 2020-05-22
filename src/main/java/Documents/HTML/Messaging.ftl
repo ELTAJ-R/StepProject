@@ -51,17 +51,24 @@
                 <div class="col-md-12 chats pt-3 pl-2 pr-3 pb-3">
                     <ul class="p-0">
                         <#list messages as message>
-                            <li class="receive-msg float-left mb-2">
-                            <div class="sender-img">
-                                <img src="https://www.searchpng.com/wp-content/uploads/2019/02/Send-Icon-PNG-1-715x657.png"
-                                     class="float-left">
-                            </div>
-                            <div class="receive-msg-desc float-left ml-2">
-                                <p class="bg-white m-0 pt-1 pb-1 pl-2 pr-2 rounded">
-                                    ${message}
+                            <#if message.isSent='true'>
+                                <li class="send-msg float-right mb-2">
+                                <p class="pt-1 pb-1 pl-2 pr-2 m-0 rounded">
+                                    ${message.message}
                                 </p>
-                            </div>
-                            </li></#list>
+                                </li></#if>
+                            <#if message.isSent='false'>
+                                <li class="receive-msg float-left mb-2">
+                                <div class="sender-img">
+                                    <img src="${user.picture}" class="float-left">
+                                </div>
+                                <div class="receive-msg-desc float-left ml-2">
+                                    <p class="bg-white m-0 pt-1 pb-1 pl-2 pr-2 rounded">
+                                        ${message.message}
+                                    </p>
+                                </div>
+                                </li></#if>
+                        </#list>
                     </ul>
                 </div>
                 <div class="col-md-12 p-2 msg-box border border-primary">

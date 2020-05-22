@@ -4,7 +4,6 @@ import DataBase.FreeMarker;
 import DataBase.SQL;
 import Entities.Message;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -20,7 +19,7 @@ public class MessagesServlet extends HttpServlet {
 
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
         try {
             String currentUser = req.getCookies()[0].getValue();
             String userOnView = req.getPathInfo().substring(1);
