@@ -1,5 +1,7 @@
 package JavaWeb;
 
+import DataBase.HerokuEnv;
+import DataBase.Updater.SQLUpdaterApp;
 import JavaWeb.Filters.CookieFilter;
 import JavaWeb.Filters.LoginFilter;
 import org.eclipse.jetty.server.Server;
@@ -11,7 +13,10 @@ import java.util.EnumSet;
 
 public class WebServerApp {
     public static void main(String[] args) throws Exception {
-        Server server = new Server(8181);
+        HerokuEnv env=new HerokuEnv();
+        SQLUpdaterApp db = new SQLUpdaterApp();
+        db.autoUpdate();
+        Server server = new Server(env.port());
         ServletContextHandler handler = new ServletContextHandler();
         handler.addServlet(new ServletHolder(new UsersServlet()), "/users/*");
         handler.addServlet(new ServletHolder(new LoginServlet()), "/login/*");
