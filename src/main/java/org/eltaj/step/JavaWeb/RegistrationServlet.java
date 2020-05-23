@@ -20,10 +20,7 @@ public class RegistrationServlet extends HttpServlet {
                 .collect(Collectors.joining("\n"));
         try (PrintWriter w = resp.getWriter()) {
             w.write(html);
-        }
-
-
-    }
+        } }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
