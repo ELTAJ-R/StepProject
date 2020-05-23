@@ -17,7 +17,6 @@ public class SQL {
     private final static String uname = credentials.jdbc_username();
     private final static String parol = credentials.jdbc_password();
     private final static String URL = credentials.jdbc_url();
-
     private static SQL db = new SQL();
     private static int lastUserID = 0;
     public final String htmlLocation = "src/main/java/org/eltaj/step/Documents/HTML";

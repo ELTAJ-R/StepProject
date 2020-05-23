@@ -1,0 +1,6 @@
+INSERT INTO public.userdata (id, username, password, email, name, surname, photo, lastlogin) VALUES (6, 'James', '4567', 'james@mail.ru', 'James', 'Smith', 'https://png.pngtree.com/png-clipart/20190924/original/pngtree-businessman-user-avatar-free-vector-png-image_4827807.jpg', '18:16 22.05.2020');
+INSERT INTO public.userdata (id, username, password, email, name, surname, photo, lastlogin) VALUES (4, 'Michael', '1234', 'michael@mail.ru', 'Michael', 'Mikaelson', 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRvx7sSY0Gz89wltUm8FrGgIBtuLFXDz8yZHHCQ15BDqKMD8plg&usqp=CAU', '2020-05-22');
+INSERT INTO public.userdata (id, username, password, email, name, surname, photo, lastlogin) VALUES (10, 'Lucy', 'lucy123', 'lucy@mail.ru', 'Lucy', 'Mikaelson', 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcR-cx1_fVMqTfB-ro8-c8Dl5HQTTjdvLaKDtPFPK7gYpc6rU08I&usqp=CAU', null);
+update userdata
+set photo='https://www.freeiconspng.com/uploads/-avatar-people-person-profile-user-women-icon--icon-search-engine-23.png'
+where name='Jane';
