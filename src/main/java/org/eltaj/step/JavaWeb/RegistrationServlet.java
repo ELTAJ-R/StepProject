@@ -4,7 +4,6 @@ import org.eltaj.step.DataBase.Methods;
 import org.eltaj.step.DataBase.SQL;
 import org.eltaj.step.Entities.User;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -16,8 +15,8 @@ public class RegistrationServlet extends HttpServlet {
     SQL db = new SQL();
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String html = new BufferedReader(new FileReader(new File("src/main/java/org.eltaj.step.JavaWeb.Documents/HTML/Register.html"))).lines()
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        String html = new BufferedReader(new FileReader(new File("src/main/java/org/eltaj/step/Documents/HTML/Register.html"))).lines()
                 .collect(Collectors.joining("\n"));
         try (PrintWriter w = resp.getWriter()) {
             w.write(html);
@@ -40,5 +39,7 @@ public class RegistrationServlet extends HttpServlet {
         if (canProceed) resp.sendRedirect("/login/*");
         else resp.sendRedirect("/register/*");
     }
+
+
 }
 
