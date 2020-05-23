@@ -1,4 +1,4 @@
-package DataBase.Updater;
+package org.eltaj.step.DataBase.Updater;
 
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.configuration.FluentConfiguration;

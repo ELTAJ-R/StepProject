@@ -1,4 +1,4 @@
-package DataBase;
+package org.eltaj.step.DataBase;
 
 public class HerokuEnv {
 

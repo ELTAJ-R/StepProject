@@ -1,6 +1,6 @@
-package DataBase.Updater;
+package org.eltaj.step.DataBase.Updater;
 
-import DataBase.HerokuEnv;
+import org.eltaj.step.DataBase.HerokuEnv;
 
 public class SQLUpdaterApp {
     //Please add UserName, Password and URL in order to access db.

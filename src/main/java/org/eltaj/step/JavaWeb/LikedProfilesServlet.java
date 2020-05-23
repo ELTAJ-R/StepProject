@@ -1,8 +1,8 @@
-package JavaWeb;
+package org.eltaj.step.JavaWeb;
 
-import DataBase.FreeMarker;
-import DataBase.SQL;
-import Entities.User;
+import org.eltaj.step.DataBase.FreeMarker;
+import org.eltaj.step.DataBase.SQL;
+import org.eltaj.step.Entities.User;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;

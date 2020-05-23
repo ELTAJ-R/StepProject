@@ -1,4 +1,4 @@
-package Entities;
+package org.eltaj.step.Entities;
 
 public class User {
     public int id;

@@ -1,8 +1,8 @@
-package JavaWeb;
+package org.eltaj.step.JavaWeb;
 
-import DataBase.Methods;
-import DataBase.SQL;
-import Entities.User;
+import org.eltaj.step.DataBase.Methods;
+import org.eltaj.step.DataBase.SQL;
+import org.eltaj.step.Entities.User;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -17,7 +17,7 @@ public class RegistrationServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String html = new BufferedReader(new FileReader(new File("src/main/java/Documents/HTML/Register.html"))).lines()
+        String html = new BufferedReader(new FileReader(new File("src/main/java/org.eltaj.step.JavaWeb.Documents/HTML/Register.html"))).lines()
                 .collect(Collectors.joining("\n"));
         try (PrintWriter w = resp.getWriter()) {
             w.write(html);

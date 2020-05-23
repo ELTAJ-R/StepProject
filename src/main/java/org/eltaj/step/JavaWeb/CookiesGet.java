@@ -1,4 +1,4 @@
-package JavaWeb;
+package org.eltaj.step.JavaWeb;
 
 
 import javax.servlet.http.Cookie;

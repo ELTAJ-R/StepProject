@@ -1,4 +1,4 @@
-package JavaWeb.Filters;
+package org.eltaj.step.Filters;
 
 import javax.servlet.*;
 import javax.servlet.http.Cookie;

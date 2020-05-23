@@ -1,12 +1,11 @@
-package JavaWeb;
-
-import DataBase.HerokuEnv;
-import DataBase.Updater.SQLUpdaterApp;
-import JavaWeb.Filters.CookieFilter;
-import JavaWeb.Filters.LoginFilter;
+import org.eltaj.step.DataBase.Updater.SQLUpdaterApp;
+import org.eltaj.step.DataBase.HerokuEnv;
+import org.eltaj.step.Filters.CookieFilter;
+import org.eltaj.step.Filters.LoginFilter;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.eltaj.step.JavaWeb.*;
 
 import javax.servlet.DispatcherType;
 import java.util.EnumSet;

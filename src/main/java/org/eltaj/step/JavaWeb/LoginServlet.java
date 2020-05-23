@@ -1,6 +1,6 @@
-package JavaWeb;
+package org.eltaj.step.JavaWeb;
 
-import DataBase.SQL;
+import org.eltaj.step.DataBase.SQL;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;

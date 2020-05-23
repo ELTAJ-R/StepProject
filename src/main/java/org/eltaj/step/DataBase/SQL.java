@@ -1,9 +1,9 @@
-package DataBase;
+package org.eltaj.step.DataBase;
 
 
-import Entities.Pair;
-import Entities.Message;
-import Entities.User;
+import org.eltaj.step.Entities.Pair;
+import org.eltaj.step.Entities.User;
+import org.eltaj.step.Entities.Message;
 
 import java.sql.*;
 import java.util.*;
@@ -20,7 +20,7 @@ public class SQL {
 
     private static SQL db = new SQL();
     private static int lastUserID = 0;
-    public final String htmlLocation = "src/main/java/Documents/HTML";
+    public final String htmlLocation = "src/main/java/org.eltaj.step.JavaWeb.Documents/HTML";
     public static Methods methods = new Methods();
 
     //This function gets new user each time from db. when /users/* get request is made

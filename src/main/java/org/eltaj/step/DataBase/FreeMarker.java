@@ -1,4 +1,4 @@
-package DataBase;
+package org.eltaj.step.DataBase;
 
 import freemarker.template.Configuration;
 import freemarker.template.TemplateExceptionHandler;
@@ -10,7 +10,7 @@ import java.nio.charset.StandardCharsets;
 
 public class FreeMarker {
     public Configuration config;
-//Free marker requires pahtname where .ftl file is situated("Documents/Code") and Http response
+//Free marker requires pahtname where .ftl file is situated("org.eltaj.step.JavaWeb.Documents/Code") and Http response
     public FreeMarker(String pathName, HttpServletResponse response) throws IOException {
         response.setCharacterEncoding(String.valueOf(StandardCharsets.UTF_8));
         config = new Configuration(Configuration.VERSION_2_3_28) {{

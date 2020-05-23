@@ -1,4 +1,4 @@
-package Entities;
+package org.eltaj.step.Entities;
 
 public class Pair<A, B> {
     public A a;

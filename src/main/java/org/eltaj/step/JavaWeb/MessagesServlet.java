@@ -1,14 +1,15 @@
-package JavaWeb;
+package org.eltaj.step.JavaWeb;
 
-import DataBase.FreeMarker;
-import DataBase.Methods;
-import DataBase.SQL;
-import Entities.Message;
+import org.eltaj.step.DataBase.FreeMarker;
+import org.eltaj.step.DataBase.Methods;
+import org.eltaj.step.DataBase.SQL;
+import org.eltaj.step.Entities.Message;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.*;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
