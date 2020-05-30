@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.sql.SQLException;
-import java.util.stream.Collectors;
 
 
 public class LoginServlet extends HttpServlet {
@@ -29,10 +28,9 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String location = String.format("%s/%s", db.htmlLocation, "Login.html");
-        String html = new BufferedReader(new FileReader(new File(location))).lines()
-                .collect(Collectors.joining("\n"));
+        String result = mixedMethods.getFileOrMessage(location);
         try (PrintWriter w = resp.getWriter()) {
-            w.write(html);
+            w.write(result);
         }
 
     }

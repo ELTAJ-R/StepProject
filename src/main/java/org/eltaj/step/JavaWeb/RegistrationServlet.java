@@ -9,7 +9,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
-import java.util.stream.Collectors;
 
 
 public class RegistrationServlet extends HttpServlet {
@@ -25,10 +24,10 @@ public class RegistrationServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        String html = new BufferedReader(new FileReader(new File("src/main/java/org/eltaj/step/Documents/HTML/Register.html"))).lines()
-                .collect(Collectors.joining("\n"));
+        String location=String.format("%s/%s",db.htmlLocation,"Register.html");
+        String result = mixedMethods.getFileOrMessage(location);
         try (PrintWriter w = resp.getWriter()) {
-            w.write(html);
+            w.write(result);
         } }
 
     @Override
@@ -40,7 +39,7 @@ public class RegistrationServlet extends HttpServlet {
                 req.getParameter("password"));
 
         //no way to register without filling the whole form
-        boolean canProceed = mixedMethods.allIsFilled(req, 5) && db.register(user);
+        boolean canProceed = mixedMethods.allIsFilled(req, 5)  && db.register(user);
         if (canProceed) resp.sendRedirect("/login/*");
         else resp.sendRedirect("/register/*");
     }
