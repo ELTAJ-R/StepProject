@@ -1,5 +1,6 @@
 package org.eltaj.step.DataBase;
 
+
 import javax.servlet.http.HttpServletRequest;
 import java.io.BufferedReader;
 import java.io.File;
@@ -14,7 +15,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class Methods {
-
     //checks whether string contains any value other than space, if yes returns true.
     public boolean containsRealValue(String s) {
         return s.chars().distinct().filter(a -> a != ' ').count() > 0;
@@ -55,4 +55,5 @@ public class Methods {
     public String getFileOrMessage(String path){
         return getFileAsString(path).orElse("File could not be found in specified location");
     }
+
 }

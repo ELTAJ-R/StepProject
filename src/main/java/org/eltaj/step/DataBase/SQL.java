@@ -13,7 +13,7 @@ import java.util.stream.IntStream;
 
 public class SQL {
     //Please add UserName, Password and URL as environment variables in order to access db.
-    private final static HerokuEnv credentials=new HerokuEnv();
+    private final static HerokuEnv credentials = new HerokuEnv();
     private final static String uname = credentials.jdbc_username();
     private final static String parol = credentials.jdbc_password();
     private final static String URL = credentials.jdbc_url();
@@ -22,8 +22,8 @@ public class SQL {
     private static int lastUserID = 0;
 
     public SQL(Methods mixedMethods) {
-        this.mixedMethods=mixedMethods;}
-
+        this.mixedMethods = mixedMethods;
+    }
 
 
     //This function gets new user each time from db. when /users/* get request is made
@@ -41,7 +41,12 @@ public class SQL {
                 String name = res.getString("name");
                 String surname = res.getString("surname");
                 String photo = res.getString("photo");
-                user = new User(lastUserID, name, surname, photo);
+                user = User.builder()
+                        .name(name)
+                        .surname(surname)
+                        .picture(photo)
+                        .id(lastUserID)
+                        .build();
                 break;
             }
 
@@ -126,7 +131,13 @@ public class SQL {
                 String photo = res.getString("photo");
                 String lastLogin = res.getString("lastlogin");
                 String loginDate = lastLogin != null ? lastLogin : "not available";
-                user = new User(id, name, surname, photo, loginDate);
+                user = User.builder()
+                        .name(name)
+                        .surname(surname)
+                        .lastLogin(loginDate)
+                        .id(id)
+                        .picture(photo)
+                        .build();
             }
         }
         return user;
@@ -214,7 +225,7 @@ public class SQL {
         LinkedList<Message> from = showMessagesFromMe(me, anotherPerson, "true");
         LinkedList<Message> to = showMessagesToMe(me, anotherPerson, "false");
         from.addAll(to);
-        return from.stream().sorted((t1, t2) -> (t1.id) - (t2.id))
+        return from.stream().sorted((t1, t2) -> (t1.getId()) - (t2.getId()))
                 .collect(Collectors.toList());
     }
 
@@ -235,7 +246,6 @@ public class SQL {
     }
 
 
-
     public void addMessage(String currentUser, String anotherUser, String message) throws SQLException {
         try (Connection cn = DriverManager.getConnection(URL, uname, parol)) {
             String query = "insert into messages (id, sender, receiver, message, date) values (DEFAULT,?,?,?,?)";
@@ -253,12 +263,12 @@ public class SQL {
         try (Connection cn = DriverManager.getConnection(URL, uname, parol)) {
             String command = "insert into userdata (id,username, password, email, name, surname, photo) VALUES (DEFAULT,?,?,?,?,?,?)";
             PreparedStatement statement = cn.prepareStatement(command);
-            statement.setString(1, user.name);
-            statement.setString(2, user.password);
-            statement.setString(3, user.email);
-            statement.setString(4, user.name);
-            statement.setString(5, user.surname);
-            statement.setString(6, user.picture);
+            statement.setString(1, user.getName());
+            statement.setString(2, user.getPassword());
+            statement.setString(3, user.getEmail());
+            statement.setString(4, user.getName());
+            statement.setString(5, user.getSurname());
+            statement.setString(6, user.getPicture());
             statement.execute();
             created = true;
         } catch (Exception e) {

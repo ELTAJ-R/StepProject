@@ -53,7 +53,7 @@ public class UsersServlet extends HttpServlet {
                 String currentUser = mixedMethods.findCurrUser(req);
                 boolean didYouLike = req.getParameter("first") != null;
                 if (didYouLike) {
-                    String like = pair.b.name;
+                    String like = pair.b.getName();
                     db.addLike(currentUser, like);
                 }
                 if (pair.a) {

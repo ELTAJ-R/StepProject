@@ -24,22 +24,25 @@ public class RegistrationServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        String location=String.format("%s/%s",db.htmlLocation,"Register.html");
+        String location = String.format("%s/%s", db.htmlLocation, "Register.html");
         String result = mixedMethods.getFileOrMessage(location);
         try (PrintWriter w = resp.getWriter()) {
             w.write(result);
-        } }
+        }
+    }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        User user = new User(req.getParameter("name"),
-                req.getParameter("surname"),
-                req.getParameter("email"),
-                req.getParameter("photo"),
-                req.getParameter("password"));
+        User user = User.builder()
+                .name(req.getParameter("name"))
+                .surname(req.getParameter("surname"))
+                .email(req.getParameter("email"))
+                .picture(req.getParameter("photo"))
+                .password(req.getParameter("password"))
+                .build();
 
         //no way to register without filling the whole form
-        boolean canProceed = mixedMethods.allIsFilled(req, 5)  && db.register(user);
+        boolean canProceed = mixedMethods.allIsFilled(req, 5) && db.register(user);
         if (canProceed) resp.sendRedirect("/login/*");
         else resp.sendRedirect("/register/*");
     }
