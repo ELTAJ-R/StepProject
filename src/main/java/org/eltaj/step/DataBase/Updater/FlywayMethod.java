@@ -3,7 +3,7 @@ package org.eltaj.step.DataBase.Updater;
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.configuration.FluentConfiguration;
 
-public class MainLogic {
+public class FlywayMethod {
     static void prepare(String uri, String user, String password) {
         prepare(uri, user, password, false);
     }

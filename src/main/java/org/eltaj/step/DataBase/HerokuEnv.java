@@ -2,7 +2,7 @@ package org.eltaj.step.DataBase;
 
 public class HerokuEnv {
 
-  public static int port() {
+  public int port() {
     try {
       return Integer.parseInt(System.getenv("PORT"));
     } catch (NumberFormatException ex) {
@@ -10,19 +10,19 @@ public class HerokuEnv {
     }
   }
 
-  public static String jdbc_url() {
+  public String jdbc_url() {
     String url = System.getenv("JDBC_DATABASE_URL");
     if (url == null) throw new IllegalArgumentException("JDBC_DATABASE_URL is empty!!!");
     return url;
   }
 
-  public static String jdbc_username() {
+  public String jdbc_username() {
     String url = System.getenv("JDBC_DATABASE_USERNAME");
     if (url == null) throw new IllegalArgumentException("JDBC_DATABASE_USERNAME is empty!!!");
     return url;
   }
 
-  public static String jdbc_password() {
+  public String jdbc_password() {
     String url = System.getenv("JDBC_DATABASE_PASSWORD");
     if (url == null) throw new IllegalArgumentException("JDBC_DATABASE_PASSWORD is empty!!!");
     return url;

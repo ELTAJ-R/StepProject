@@ -1,5 +1,7 @@
 package org.eltaj.step.JavaWeb;
 
+import org.eltaj.step.DataBase.FreeMarker;
+import org.eltaj.step.DataBase.Methods;
 import org.eltaj.step.DataBase.SQL;
 
 import javax.servlet.http.Cookie;
@@ -12,13 +14,21 @@ import java.util.stream.Collectors;
 
 
 public class LoginServlet extends HttpServlet {
-    SQL db = new SQL();
-    public static boolean isLoggedIn = false;
+    private final SQL db;
+    private final FreeMarker marker;
+    private final Methods mixedMethods;
+
+    public LoginServlet(SQL db, FreeMarker marker, Methods mixedMethods) {
+        this.db = db;
+        this.marker = marker;
+        this.mixedMethods = mixedMethods;
+    }
+
+
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String location = String.format("%s/%s", db.htmlLocation, "Login.html");
-
         String html = new BufferedReader(new FileReader(new File(location))).lines()
                 .collect(Collectors.joining("\n"));
         try (PrintWriter w = resp.getWriter()) {
@@ -30,6 +40,7 @@ public class LoginServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        boolean isLoggedIn = false;
         String user = req.getParameter("user");
         String password = req.getParameter("password");
         try {

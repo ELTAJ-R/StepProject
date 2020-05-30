@@ -16,24 +16,29 @@ import java.util.List;
 
 
 public class MessagesServlet extends HttpServlet {
-    SQL db = new SQL();
+    private final SQL db;
+    private final FreeMarker marker;
+    private final Methods mixedMethods;
+
+    public MessagesServlet(SQL db, FreeMarker marker, Methods mixedMethods) {
+        this.db = db;
+        this.marker = marker;
+        this.mixedMethods = mixedMethods;}
     static int numberOfMessages = 8;
 
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
         try {
-            String currentUser = req.getCookies()[0].getValue();
+            String currentUser = mixedMethods.findCurrUser(req);
             String userOnView = req.getPathInfo().substring(1);
             List<Message> messages = db.messageLimiter(numberOfMessages, currentUser, userOnView);
-            HashMap<String, Object> hashMap = new HashMap<>();
-            hashMap.put("curr", db.getUserByName(currentUser));
-            hashMap.put("user", db.getUserByName(userOnView));
-            hashMap.put("messages", messages);
-
+            HashMap<String, Object> hashMap =
+                    new HashMap(){{put("curr", db.getUserByName(currentUser));
+                                   put("user", db.getUserByName(userOnView));
+                                   put("messages", messages);}};
             try (PrintWriter w = resp.getWriter()) {
-                FreeMarker marker = new FreeMarker(db.htmlLocation, resp);
-                marker.config.getTemplate("Messaging.ftl").process(hashMap, w);
+                marker.getTemplate(resp,"Messaging.ftl",hashMap,w);
             }
         } catch (Exception e) {
             System.out.println(e);
@@ -43,12 +48,11 @@ public class MessagesServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        Methods method = new Methods();
-        String currentUser = req.getCookies()[0].getValue();
+        String currentUser = mixedMethods.findCurrUser(req);
         String userOnView = req.getPathInfo().substring(1);
         String new_message = req.getParameter("message");
         //no way to send an empty message
-        boolean shouldAdd = method.containsRealValue(new_message);
+        boolean shouldAdd = mixedMethods.containsRealValue(new_message);
         String redirection = String.format("%s/%s", "/messages", userOnView);
         if(shouldAdd){
         try { db.addMessage(currentUser, userOnView, new_message);}

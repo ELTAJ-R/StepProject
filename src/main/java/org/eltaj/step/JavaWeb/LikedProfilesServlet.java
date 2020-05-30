@@ -1,6 +1,7 @@
 package org.eltaj.step.JavaWeb;
 
 import org.eltaj.step.DataBase.FreeMarker;
+import org.eltaj.step.DataBase.Methods;
 import org.eltaj.step.DataBase.SQL;
 import org.eltaj.step.Entities.User;
 
@@ -12,20 +13,23 @@ import java.util.HashMap;
 import java.util.List;
 
 public class LikedProfilesServlet extends HttpServlet {
-    SQL db = new SQL();
+    private final SQL db;
+    private final FreeMarker marker;
+    private final Methods mixedMethods;
 
-    @Override
+    public LikedProfilesServlet(SQL db, FreeMarker marker, Methods mixedMethods) {
+        this.db = db;
+        this.marker = marker;
+        this.mixedMethods = mixedMethods;}
+
+        @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
-        String currentUser = req.getCookies()[0].getValue();
-
+        String currentUser = mixedMethods.findCurrUser(req);
         try {
             List<User> all = db.getAll(currentUser);
-            HashMap<String, List<User>> map = new HashMap<>();
-            map.put("users", all);
-
+            HashMap<String, List<User>> map = new HashMap(){{put("users", all);}};
             try (PrintWriter w = resp.getWriter()) {
-                FreeMarker marker = new FreeMarker(db.htmlLocation, resp);
-                marker.config.getTemplate("Like.ftl").process(map, w);
+               marker.getTemplate(resp,"Like.ftl",map,w);
             }
         } catch (Exception e) {
             e.printStackTrace();

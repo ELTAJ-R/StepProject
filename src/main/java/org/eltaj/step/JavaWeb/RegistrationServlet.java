@@ -1,5 +1,6 @@
 package org.eltaj.step.JavaWeb;
 
+import org.eltaj.step.DataBase.FreeMarker;
 import org.eltaj.step.DataBase.Methods;
 import org.eltaj.step.DataBase.SQL;
 import org.eltaj.step.Entities.User;
@@ -12,7 +13,15 @@ import java.util.stream.Collectors;
 
 
 public class RegistrationServlet extends HttpServlet {
-    SQL db = new SQL();
+    private final SQL db;
+    private final FreeMarker marker;
+    private final Methods mixedMethods;
+
+    public RegistrationServlet(SQL db, FreeMarker marker, Methods mixedMethods) {
+        this.db = db;
+        this.marker = marker;
+        this.mixedMethods = mixedMethods;
+    }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -30,9 +39,8 @@ public class RegistrationServlet extends HttpServlet {
                 req.getParameter("photo"),
                 req.getParameter("password"));
 
-        Methods methods = new Methods();
         //no way to register without filling the whole form
-        boolean canProceed = methods.allIsFilled(req, 5) && db.register(user);
+        boolean canProceed = mixedMethods.allIsFilled(req, 5) && db.register(user);
         if (canProceed) resp.sendRedirect("/login/*");
         else resp.sendRedirect("/register/*");
     }

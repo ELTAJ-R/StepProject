@@ -1,4 +1,7 @@
-import org.eltaj.step.DataBase.Updater.SQLUpdaterApp;
+import org.eltaj.step.DataBase.FreeMarker;
+import org.eltaj.step.DataBase.Methods;
+import org.eltaj.step.DataBase.SQL;
+import org.eltaj.step.DataBase.Updater.InitializeSQL;
 import org.eltaj.step.DataBase.HerokuEnv;
 import org.eltaj.step.Filters.CookieFilter;
 import org.eltaj.step.Filters.LoginFilter;
@@ -12,18 +15,28 @@ import java.util.EnumSet;
 
 public class WebServerApp {
     public static void main(String[] args) throws Exception {
+
+        // initializing methods and classes for all servlets
         HerokuEnv env=new HerokuEnv();
-        SQLUpdaterApp db = new SQLUpdaterApp();
-        db.autoUpdate();
+        InitializeSQL updater = new InitializeSQL();
+        Methods mixedMethods = new Methods();
+        SQL db=new SQL(mixedMethods);
+        FreeMarker marker=new FreeMarker(db.htmlLocation);
+
+        // updates or creates database prior to starting server
+        updater.autoUpdate();
+
+
+        // Configuring server and mapping to URL
         Server server = new Server(env.port());
         ServletContextHandler handler = new ServletContextHandler();
-        handler.addServlet(new ServletHolder(new UsersServlet()), "/users/*");
-        handler.addServlet(new ServletHolder(new LoginServlet()), "/login/*");
-        handler.addServlet(new ServletHolder(new LoginServlet()), "/");
+        handler.addServlet(new ServletHolder(new UsersServlet(db,marker, mixedMethods)), "/users/*");
+        handler.addServlet(new ServletHolder(new LoginServlet(db,marker, mixedMethods)), "/login/*");
+        handler.addServlet(new ServletHolder(new LoginServlet(db,marker, mixedMethods)), "/");
         handler.addServlet(new ServletHolder(new LogOutServlet()), "/logout/*");
-        handler.addServlet(new ServletHolder(new LikedProfilesServlet()), "/like/*");
-        handler.addServlet(new ServletHolder(new MessagesServlet()), "/messages/*");
-        handler.addServlet(RegistrationServlet.class, "/register/*");
+        handler.addServlet(new ServletHolder(new LikedProfilesServlet(db,marker, mixedMethods)), "/like/*");
+        handler.addServlet(new ServletHolder(new MessagesServlet(db,marker, mixedMethods)), "/messages/*");
+        handler.addServlet(new ServletHolder(new RegistrationServlet(db,marker, mixedMethods)), "/register/*");
         handler.addServlet(new ServletHolder(new ReferenceServlet("CSS")), "/css/*");
 
         handler.addFilter(CookieFilter.class, "/users/*", EnumSet.of(DispatcherType.REQUEST));

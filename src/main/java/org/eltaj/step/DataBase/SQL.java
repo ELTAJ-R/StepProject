@@ -12,15 +12,19 @@ import java.util.stream.IntStream;
 
 
 public class SQL {
-    //Please add UserName, Password and URL in order to access db.
-    public static  HerokuEnv credentials=new HerokuEnv();
+    //Please add UserName, Password and URL as environment variables in order to access db.
+    private final static HerokuEnv credentials=new HerokuEnv();
     private final static String uname = credentials.jdbc_username();
     private final static String parol = credentials.jdbc_password();
     private final static String URL = credentials.jdbc_url();
-    private static SQL db = new SQL();
-    private static int lastUserID = 0;
+    private final Methods mixedMethods;
     public final String htmlLocation = "src/main/java/org/eltaj/step/Documents/HTML";
-    public static Methods methods = new Methods();
+    private static int lastUserID = 0;
+
+    public SQL(Methods mixedMethods) {
+        this.mixedMethods=mixedMethods;}
+
+
 
     //This function gets new user each time from db. when /users/* get request is made
     public Pair<Boolean, User> getNextUser(String loggedInUser) throws SQLException {
@@ -89,7 +93,7 @@ public class SQL {
         try (Connection cn = DriverManager.getConnection(URL, uname, parol)) {
             String query = "update userdata set lastlogin=? where username=?";
             PreparedStatement statement = cn.prepareStatement(query);
-            statement.setString(1, methods.now());
+            statement.setString(1, mixedMethods.now());
             statement.setString(2, curr);
             statement.execute();
         } catch (Exception e) {
@@ -109,7 +113,7 @@ public class SQL {
     }
 
 
-    public static User getUserByName(String name) throws SQLException {
+    public User getUserByName(String name) throws SQLException {
         User user = new User();
         try (Connection cn = DriverManager.getConnection(URL, uname, parol)) {
             String query = "select * from userdata where name=?";
@@ -221,7 +225,7 @@ public class SQL {
 
     //limits the number of shown messages to the specified number
     public List<Message> messageLimiter(int limit, String me, String anotherPerson) throws SQLException {
-        List<Message> allMessages = db.getAllMessages(me, anotherPerson);
+        List<Message> allMessages = getAllMessages(me, anotherPerson);
         boolean shouldDelete = allMessages.size() > limit;
         if (shouldDelete) {
             List<Message> list = IntStream.range(allMessages.size() - limit, allMessages.size())
@@ -239,7 +243,7 @@ public class SQL {
             statement.setString(1, currentUser);
             statement.setString(2, anotherUser);
             statement.setString(3, message);
-            statement.setString(4, methods.now());
+            statement.setString(4, mixedMethods.now());
             statement.execute();
         }
     }
