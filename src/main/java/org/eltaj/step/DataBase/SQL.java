@@ -1,6 +1,7 @@
 package org.eltaj.step.DataBase;
 
 
+import lombok.extern.log4j.Log4j2;
 import org.eltaj.step.Entities.Pair;
 import org.eltaj.step.Entities.User;
 import org.eltaj.step.Entities.Message;
@@ -10,7 +11,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-
+@Log4j2
 public class SQL {
     //Please add UserName, Password and URL as environment variables in order to access db.
     private final static HerokuEnv credentials = new HerokuEnv();
@@ -20,6 +21,9 @@ public class SQL {
     private final Methods mixedMethods;
     public final String htmlLocation = "src/main/java/org/eltaj/step/Documents/HTML";
     private static int lastUserID = 0;
+    private final static boolean ERROR = false;
+    private final static boolean SUCCESSFUL = true;
+
 
     public SQL(Methods mixedMethods) {
         this.mixedMethods = mixedMethods;
@@ -27,7 +31,8 @@ public class SQL {
 
 
     //This function gets new user each time from db. when /users/* get request is made
-    public Pair<Boolean, User> getNextUser(String loggedInUser) throws SQLException {
+    public Optional<Pair<Boolean, User>> getNextUser(String loggedInUser) {
+        log.info("trying to get the next user for /users/*");
         User user = new User();
         boolean allClicked = false;
         try (Connection cn = DriverManager.getConnection(URL, uname, parol)) {
@@ -49,34 +54,44 @@ public class SQL {
                         .build();
                 break;
             }
-
-            if (lastUserID == getMaxID(loggedInUser)) {
+            int maxID = getMaxID(loggedInUser).orElse(0);
+            if (lastUserID == maxID) {
                 lastUserID = 0;
                 allClicked = true;
             }
             Pair<Boolean, User> pair = new Pair<>(allClicked, user);
-            return pair;
+            return Optional.of(pair);
+        } catch (SQLException e) {
+            log.error("SQL exception was thrown while getting the next user: " + e);
+            return Optional.empty();
         }
     }
 
-    public static int getMaxID(String curr) throws SQLException {
-        int maxID = 0;
+    public Optional<Integer> getMaxID(String curr) {
         try (Connection cn = DriverManager.getConnection(URL, uname, parol)) {
             String query = "select max(id) from userdata where name!=?";
             PreparedStatement stmt = cn.prepareStatement(query);
             stmt.setString(1, curr);
             ResultSet res = stmt.executeQuery();
+            int maxID = Integer.MAX_VALUE;
             while (res.next()) {
                 maxID = res.getInt("max");
             }
-            return maxID;
+            return Optional.of(maxID);
+        } catch (SQLException e) {
+            log.error("Could not find the max id due to SQL exception:  ", e);
+            return Optional.empty();
+        } catch (Exception e) {
+            log.error("Could not find the max id due to unexpected exception:  ", e);
+            return Optional.empty();
         }
     }
 
 
     //this function checks if user is authorized or not
 
-    public boolean login(String user, String password) throws SQLException {
+    public boolean login(String user, String password) {
+        log.info("Inside Login");
         boolean isLoggedIn = false;
         try (Connection cn = DriverManager.getConnection(URL, uname, parol)) {
             String query = "select id from userdata where username=? and password=?";
@@ -84,12 +99,12 @@ public class SQL {
             stmt.setString(1, user);
             stmt.setString(2, password);
             ResultSet res = stmt.executeQuery();
-            try {
-                isLoggedIn = res.next();
-            } catch (Exception e) {
-            }
-            return isLoggedIn;
+
+            isLoggedIn = res.next();
+        } catch (SQLException e) {
+            log.error("SQL exception occurred while logging in" + e);
         }
+        return isLoggedIn;
     }
 
 
@@ -101,24 +116,28 @@ public class SQL {
             statement.setString(1, mixedMethods.now());
             statement.setString(2, curr);
             statement.execute();
-        } catch (Exception e) {
+        } catch (SQLException e) {
+            log.error("SQL exception occured while updating last login date" + e);
         }
     }
 
 
     // checks which users have been liked by the logged in user and returns them as User object
 
-    public List<User> getAll(String currentUser) throws SQLException {
+    public List<User> getAll(String currentUser) {
         LinkedList<String> allUsers = findAllLikes(currentUser);
         List<User> allLikedUsers = new LinkedList<>();
         for (String name : allUsers) {
-            allLikedUsers.add(getUserByName(name));
+            User user = getUserByName(name)
+                    .orElse(User.builder().name("No such user").build());
+            allLikedUsers.add(user);
         }
         return allLikedUsers;
     }
 
 
-    public User getUserByName(String name) throws SQLException {
+    public Optional<User> getUserByName(String name) {
+        log.info("Getting user by name: " + name);
         User user = new User();
         try (Connection cn = DriverManager.getConnection(URL, uname, parol)) {
             String query = "select * from userdata where name=?";
@@ -139,12 +158,22 @@ public class SQL {
                         .picture(photo)
                         .build();
             }
+
+            return Optional.of(user);
+        } catch (SQLException e) {
+            log.error("SQL exception while getting user with the specified name: " + e);
+            return Optional.empty();
+        } catch (Exception e) {
+            log.error("unexpected exception happened while getting user by specified name: " + e);
+            return Optional.empty();
+
         }
-        return user;
+
     }
 
 
     public static LinkedList<String> findAllLikes(String currentUser) {
+        log.info("Getting all users liked by:  "+currentUser);
         LinkedList<String> allLikedProfiles = new LinkedList<>();
         try (Connection cn = DriverManager.getConnection(URL, uname, parol)) {
             String query = "select liked from likes where current=?";
@@ -155,8 +184,8 @@ public class SQL {
                 String profile = resultSet.getString("liked");
                 allLikedProfiles.add(profile);
             }
-        } catch (Exception e) {
-        }
+        } catch (SQLException e) {
+            log.error("Could not get liked profiles due to the following error:  "+e);}
         return allLikedProfiles;
     }
 
@@ -221,12 +250,18 @@ public class SQL {
     }
 
     //puts all messages in order based on the time sent
-    public List<Message> getAllMessages(String me, String anotherPerson) throws SQLException {
-        LinkedList<Message> from = showMessagesFromMe(me, anotherPerson, "true");
-        LinkedList<Message> to = showMessagesToMe(me, anotherPerson, "false");
-        from.addAll(to);
-        return from.stream().sorted((t1, t2) -> (t1.getId()) - (t2.getId()))
-                .collect(Collectors.toList());
+    public Optional<List<Message>> getAllMessages(String me, String anotherPerson) {
+        try {
+            LinkedList<Message> from = showMessagesFromMe(me, anotherPerson, "true");
+            LinkedList<Message> to = showMessagesToMe(me, anotherPerson, "false");
+            from.addAll(to);
+            List<Message> allMessages = from.stream().sorted((t1, t2) -> (t1.getId()) - (t2.getId()))
+                    .collect(Collectors.toList());
+            return Optional.of(allMessages);
+        } catch (SQLException e) {
+            log.error("could not load messages due to SQL exception: " + e);
+            return Optional.empty();
+        }
     }
 
 
@@ -235,8 +270,8 @@ public class SQL {
     }
 
     //limits the number of shown messages to the specified number
-    public List<Message> messageLimiter(int limit, String me, String anotherPerson) throws SQLException {
-        List<Message> allMessages = getAllMessages(me, anotherPerson);
+    public List<Message> messageLimiter(int limit, String me, String anotherPerson) {
+        List<Message> allMessages = getAllMessages(me, anotherPerson).get();
         boolean shouldDelete = allMessages.size() > limit;
         if (shouldDelete) {
             List<Message> list = IntStream.range(allMessages.size() - limit, allMessages.size())
@@ -246,7 +281,7 @@ public class SQL {
     }
 
 
-    public void addMessage(String currentUser, String anotherUser, String message) throws SQLException {
+    public void addMessage(String currentUser, String anotherUser, String message){
         try (Connection cn = DriverManager.getConnection(URL, uname, parol)) {
             String query = "insert into messages (id, sender, receiver, message, date) values (DEFAULT,?,?,?,?)";
             PreparedStatement statement = cn.prepareStatement(query);
@@ -256,10 +291,11 @@ public class SQL {
             statement.setString(4, mixedMethods.now());
             statement.execute();
         }
+        catch (SQLException e){log.error("SQL exception occured while trying to send a message:  "+e);}
     }
 
     public boolean register(User user) {
-        boolean created = false;
+        log.info("trying to register");
         try (Connection cn = DriverManager.getConnection(URL, uname, parol)) {
             String command = "insert into userdata (id,username, password, email, name, surname, photo) VALUES (DEFAULT,?,?,?,?,?,?)";
             PreparedStatement statement = cn.prepareStatement(command);
@@ -270,11 +306,14 @@ public class SQL {
             statement.setString(5, user.getSurname());
             statement.setString(6, user.getPicture());
             statement.execute();
-            created = true;
+            return SUCCESSFUL;
+        } catch (SQLException e) {
+            log.error("unsuccessful registration due to SQL exception: " + e);
+            return ERROR;
         } catch (Exception e) {
+            log.error("unexpected exception happened during registration: " + e);
+            return ERROR;
         }
-
-        return created;
     }
 }
 

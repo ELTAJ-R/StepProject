@@ -1,6 +1,6 @@
 package org.eltaj.step.JavaWeb;
 
-import freemarker.template.TemplateException;
+import lombok.SneakyThrows;
 import org.eltaj.step.DataBase.FreeMarker;
 import org.eltaj.step.DataBase.Methods;
 import org.eltaj.step.DataBase.SQL;
@@ -30,43 +30,29 @@ public class UsersServlet extends HttpServlet {
     }
 
     public static Pair<Boolean, User> pair;
-
+    @SneakyThrows
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        try {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp){
+        String currentUser = mixedMethods.findCurrUser(req);
+        pair = db.getNextUser(currentUser).orElse(new Pair<>(false, User.builder().name("No such user").build()));
+        HashMap<String, User> map = new HashMap() {{
+            put("user", pair.b);
+        }};
+        try (PrintWriter w = resp.getWriter()) {
+            marker.getTemplate(resp, "Users.ftl", map, w);
+        }
+    }
+
+    @SneakyThrows
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp){
             String currentUser = mixedMethods.findCurrUser(req);
-            pair = db.getNextUser(currentUser);
-            HashMap<String, User> map = new HashMap(){{put("user", pair.b);}};
-            try (PrintWriter w = resp.getWriter()) {
-               marker.getTemplate(resp,"Users.ftl",map,w);
-            }
-        } catch (TemplateException | SQLException e) {
-            e.printStackTrace();
-        }
+            boolean didYouLike = req.getParameter("first") != null;
+            if (didYouLike) {
+                String like = pair.b.getName();
+                db.addLike(currentUser, like);}
+            if (pair.a) resp.sendRedirect("/like");
+            else resp.sendRedirect("/users"); }
     }
 
-    @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        try {
-            Cookie[] cookies = req.getCookies();
-            if (cookies.length == 1) {
-                String currentUser = mixedMethods.findCurrUser(req);
-                boolean didYouLike = req.getParameter("first") != null;
-                if (didYouLike) {
-                    String like = pair.b.getName();
-                    db.addLike(currentUser, like);
-                }
-                if (pair.a) {
-                    resp.sendRedirect("/like");
-                } else
-                    resp.sendRedirect("/users");
-            }
-
-        } catch (NullPointerException e) {
-            resp.sendRedirect("/login/*");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-}
 

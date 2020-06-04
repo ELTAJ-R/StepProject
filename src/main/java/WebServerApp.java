@@ -1,3 +1,4 @@
+import lombok.extern.log4j.Log4j2;
 import org.eltaj.step.DataBase.FreeMarker;
 import org.eltaj.step.DataBase.Methods;
 import org.eltaj.step.DataBase.SQL;
@@ -8,45 +9,51 @@ import org.eltaj.step.Filters.LoginFilter;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.eltaj.step.Filters.ParamLoginFilter;
+import org.eltaj.step.Filters.ParamRegistrationFilter;
 import org.eltaj.step.JavaWeb.*;
 
 import javax.servlet.DispatcherType;
 import java.util.EnumSet;
 
+@Log4j2
 public class WebServerApp {
     public static void main(String[] args) throws Exception {
 
-        // initializing methods and classes for all servlets
-        HerokuEnv env=new HerokuEnv();
+        log.info("initializing classes in order to pass to servlets");
+        HerokuEnv env = new HerokuEnv();
         InitializeSQL updater = new InitializeSQL();
         Methods mixedMethods = new Methods();
-        SQL db=new SQL(mixedMethods);
-        FreeMarker marker=new FreeMarker(db.htmlLocation);
+        SQL db = new SQL(mixedMethods);
+        FreeMarker marker = new FreeMarker(db.htmlLocation);
 
-        // updates or creates database prior to starting server
+        log.info(" updating and/or creating database prior to starting server");
         updater.autoUpdate();
 
 
-        // Configuring server and mapping to URL
+        log.info("mapping servlets to URL");
         Server server = new Server(env.port());
         ServletContextHandler handler = new ServletContextHandler();
-        handler.addServlet(new ServletHolder(new UsersServlet(db,marker, mixedMethods)), "/users/*");
-        handler.addServlet(new ServletHolder(new LoginServlet(db,marker, mixedMethods)), "/login/*");
-        handler.addServlet(new ServletHolder(new LoginServlet(db,marker, mixedMethods)), "/");
+        handler.addServlet(new ServletHolder(new UsersServlet(db, marker, mixedMethods)), "/users/*");
+        handler.addServlet(new ServletHolder(new LoginServlet(db, marker, mixedMethods)), "/login/*");
+        handler.addServlet(new ServletHolder(new LoginServlet(db, marker, mixedMethods)), "/");
         handler.addServlet(new ServletHolder(new LogOutServlet()), "/logout/*");
-        handler.addServlet(new ServletHolder(new LikedProfilesServlet(db,marker, mixedMethods)), "/like/*");
-        handler.addServlet(new ServletHolder(new MessagesServlet(db,marker, mixedMethods)), "/messages/*");
-        handler.addServlet(new ServletHolder(new RegistrationServlet(db,marker, mixedMethods)), "/register/*");
+        handler.addServlet(new ServletHolder(new LikedProfilesServlet(db, marker, mixedMethods)), "/like/*");
+        handler.addServlet(new ServletHolder(new MessagesServlet(db, marker, mixedMethods)), "/messages/*");
+        handler.addServlet(new ServletHolder(new RegistrationServlet(db, marker, mixedMethods)), "/register/*");
         handler.addServlet(new ServletHolder(new ReferenceServlet("CSS")), "/css/*");
-
+        log.info("adding filters to servlets");
         handler.addFilter(CookieFilter.class, "/users/*", EnumSet.of(DispatcherType.REQUEST));
         handler.addFilter(CookieFilter.class, "/logout/*", EnumSet.of(DispatcherType.REQUEST));
         handler.addFilter(CookieFilter.class, "/like/*", EnumSet.of(DispatcherType.REQUEST));
         handler.addFilter(LoginFilter.class, "/login/*", EnumSet.of(DispatcherType.REQUEST));
+        handler.addFilter(ParamLoginFilter.class, "/login/*", EnumSet.of(DispatcherType.REQUEST));
         handler.addFilter(LoginFilter.class, "/", EnumSet.of(DispatcherType.REQUEST));
+        handler.addFilter(ParamLoginFilter.class, "/", EnumSet.of(DispatcherType.REQUEST));
         handler.addFilter(LoginFilter.class, "/register/*", EnumSet.of(DispatcherType.REQUEST));
         handler.addFilter(CookieFilter.class, "/messages/*", EnumSet.of(DispatcherType.REQUEST));
-
+        handler.addFilter(ParamRegistrationFilter.class, "/register/*", EnumSet.of(DispatcherType.REQUEST));
+        log.info("Server is starting now");
         server.setHandler(handler);
         server.start();
         server.join();

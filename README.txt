@@ -7,3 +7,5 @@ This version has undergone the following changes:
 #4-To reduce code repetition, getting user from cookies has been turned into a separate method.
 #5-Lombok was implemented in Entities package to reduce coding(Lombok Plugin has been added to IDE to make it work without
 warnings)
+#ParamFilter was added to Registration and Login pages, which enables us to avoid empty forms.
+#Logging was implemented in order to keep track of exceptions and errors.

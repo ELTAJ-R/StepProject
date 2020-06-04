@@ -21,11 +21,12 @@ public class Methods {
     }
 
     //checks if all the necessary fields of form are filled or not.
-    public boolean allIsFilled(HttpServletRequest request, int numOfAreasToFill) {
+    public boolean allIsFilled(HttpServletRequest request) {
         Map<String, String[]> allParam = request.getParameterMap();
+        long numOfAllFields = allParam.size();
         long numberOfFilledAreas = allParam.entrySet().stream()
                 .filter(a -> containsRealValue(a.getValue()[0])).count();
-        return numberOfFilledAreas == numOfAreasToFill;
+        return numberOfFilledAreas == numOfAllFields;
     }
 
     //takes current time and returns it as a String
@@ -55,5 +56,6 @@ public class Methods {
     public String getFileOrMessage(String path){
         return getFileAsString(path).orElse("File could not be found in specified location");
     }
+
 
 }

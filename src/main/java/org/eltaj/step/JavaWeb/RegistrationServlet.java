@@ -41,9 +41,8 @@ public class RegistrationServlet extends HttpServlet {
                 .password(req.getParameter("password"))
                 .build();
 
-        //no way to register without filling the whole form
-        boolean canProceed = mixedMethods.allIsFilled(req, 5) && db.register(user);
-        if (canProceed) resp.sendRedirect("/login/*");
+        boolean couldRegister = db.register(user);
+        if (couldRegister) resp.sendRedirect("/login/*");
         else resp.sendRedirect("/register/*");
     }
 

@@ -24,28 +24,20 @@ public class LoginServlet extends HttpServlet {
     }
 
 
-
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String location = String.format("%s/%s", db.htmlLocation, "Login.html");
         String result = mixedMethods.getFileOrMessage(location);
         try (PrintWriter w = resp.getWriter()) {
             w.write(result);
-        }
-
-    }
+        }}
 
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        boolean isLoggedIn = false;
         String user = req.getParameter("user");
         String password = req.getParameter("password");
-        try {
-            isLoggedIn = db.login(user, password);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        boolean isLoggedIn = db.login(user, password);
         if (isLoggedIn) {
             Cookie cookie = new Cookie("user", user);
             cookie.setPath("/");
