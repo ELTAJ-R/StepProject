@@ -7,13 +7,10 @@ import org.eltaj.step.DataBase.SQL;
 import org.eltaj.step.Entities.Pair;
 import org.eltaj.step.Entities.User;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.SQLException;
 import java.util.HashMap;
 
 

@@ -1,6 +1,6 @@
 package org.eltaj.step.JavaWeb;
 
-import org.eltaj.step.DataBase.FreeMarker;
+
 import org.eltaj.step.DataBase.Methods;
 import org.eltaj.step.DataBase.SQL;
 import org.eltaj.step.Entities.User;
@@ -10,15 +10,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 
-
 public class RegistrationServlet extends HttpServlet {
     private final SQL db;
-    private final FreeMarker marker;
     private final Methods mixedMethods;
 
-    public RegistrationServlet(SQL db, FreeMarker marker, Methods mixedMethods) {
+    public RegistrationServlet(SQL db,  Methods mixedMethods) {
         this.db = db;
-        this.marker = marker;
         this.mixedMethods = mixedMethods;
     }
 

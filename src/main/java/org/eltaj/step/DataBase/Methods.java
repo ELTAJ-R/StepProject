@@ -1,6 +1,9 @@
 package org.eltaj.step.DataBase;
 
 
+import org.eltaj.step.Entities.Pair;
+import org.eltaj.step.Entities.User;
+
 import javax.servlet.http.HttpServletRequest;
 import java.io.BufferedReader;
 import java.io.File;
@@ -57,5 +60,9 @@ public class Methods {
         return getFileAsString(path).orElse("File could not be found in specified location");
     }
 
+    public Pair<User,Boolean> isValidUser(Optional<User> user){
+        User userFromOptional = user.get();
+        boolean isValid = userFromOptional.getId() != 0;
+        return new Pair<>(userFromOptional,isValid); }
 
 }

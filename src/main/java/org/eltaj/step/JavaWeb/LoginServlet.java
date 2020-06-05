@@ -1,6 +1,6 @@
 package org.eltaj.step.JavaWeb;
 
-import org.eltaj.step.DataBase.FreeMarker;
+
 import org.eltaj.step.DataBase.Methods;
 import org.eltaj.step.DataBase.SQL;
 
@@ -9,17 +9,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
-import java.sql.SQLException;
-
 
 public class LoginServlet extends HttpServlet {
     private final SQL db;
-    private final FreeMarker marker;
     private final Methods mixedMethods;
 
-    public LoginServlet(SQL db, FreeMarker marker, Methods mixedMethods) {
+    public LoginServlet(SQL db, Methods mixedMethods) {
         this.db = db;
-        this.marker = marker;
         this.mixedMethods = mixedMethods;
     }
 

@@ -19,10 +19,8 @@ public class SQL {
     private final static String parol = credentials.jdbc_password();
     private final static String URL = credentials.jdbc_url();
     private final Methods mixedMethods;
-    public final String htmlLocation = "src/main/java/org/eltaj/step/Documents/HTML";
+    public final String htmlLocation = "src/main/resources/StaticContent/HTML";
     private static int lastUserID = 0;
-    private final static boolean ERROR = false;
-    private final static boolean SUCCESSFUL = true;
 
 
     public SQL(Methods mixedMethods) {
@@ -89,7 +87,6 @@ public class SQL {
 
 
     //this function checks if user is authorized or not
-
     public boolean login(String user, String password) {
         log.info("Inside Login");
         boolean isLoggedIn = false;
@@ -306,13 +303,13 @@ public class SQL {
             statement.setString(5, user.getSurname());
             statement.setString(6, user.getPicture());
             statement.execute();
-            return SUCCESSFUL;
+            return true;
         } catch (SQLException e) {
             log.error("unsuccessful registration due to SQL exception: " + e);
-            return ERROR;
+            return false;
         } catch (Exception e) {
             log.error("unexpected exception happened during registration: " + e);
-            return ERROR;
+            return false;
         }
     }
 }

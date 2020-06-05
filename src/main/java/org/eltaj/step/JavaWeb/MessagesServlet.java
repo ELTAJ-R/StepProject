@@ -5,13 +5,14 @@ import org.eltaj.step.DataBase.FreeMarker;
 import org.eltaj.step.DataBase.Methods;
 import org.eltaj.step.DataBase.SQL;
 import org.eltaj.step.Entities.Message;
+import org.eltaj.step.Entities.Pair;
+import org.eltaj.step.Entities.User;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 
@@ -35,15 +36,21 @@ public class MessagesServlet extends HttpServlet {
         String currentUser = mixedMethods.findCurrUser(req);
         String userOnView = req.getPathInfo().substring(1);
         List<Message> messages = db.messageLimiter(numberOfMessages, currentUser, userOnView);
-        HashMap<String, Object> hashMap =
+        User curr = db.getUserByName(currentUser).get();
+        Pair<User, Boolean> isValidUser = mixedMethods.isValidUser(db.getUserByName(userOnView));
+       if(isValidUser.b){
+           HashMap<String, Object> hashMap =
                 new HashMap() {{
-                    put("curr", db.getUserByName(currentUser));
-                    put("user", db.getUserByName(userOnView));
+                    put("curr", curr);
+                    put("user", isValidUser.a);
                     put("messages", messages);
                 }};
+
         try (PrintWriter w = resp.getWriter()) {
             marker.getTemplate(resp, "Messaging.ftl", hashMap, w);
         }
+    }
+       else resp.sendRedirect("/like/*");
     }
 
     @Override
